@@ -1,7 +1,7 @@
 
 @if ($paginator->hasPages())
 <nav aria-label="Page navigation example">
-<ul class="pagination justify-content-end pagination-dark pagin-border-dark gap-2">
+<ul class="pagination pagination-dark pagin-border-dark gap-2">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
             <li class="page-item disabled">

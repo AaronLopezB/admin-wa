@@ -3,9 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
+use Google\Service\Keep\Resource\Notes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -57,5 +61,15 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    /**
+     * Get all of the note for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function note(): HasOne
+    {
+        return $this->hasOne(Note::class, 'id_user', 'id');
     }
 }

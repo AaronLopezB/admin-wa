@@ -2,7 +2,10 @@
 
 namespace App\Livewire\DashBoard;
 
+use App\Mail\Reservation\RefundMail;
+use App\Mail\Reservation\ReservationMail;
 use App\Mail\ReservationReassignmentMail;
+use App\Models\Note;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -34,6 +37,10 @@ class Dashboard extends Component
         $remail;
 
     public $dateResUp, $timeResUp;
+
+    public $observations;
+
+    public $cnombre, $cemail, $gfnombre, $gfemail;
 
     protected $calendar;
 
@@ -108,6 +115,7 @@ class Dashboard extends Component
             ->with([
                 'carros:id,nombre', // selecciona solo ciertos campos de la relación
                 'persons:id,id_reserva,persons', // selecciona solo ciertos campos de la relación
+                'note.user' // selecciona solo ciertos campos de la relación
             ])
             ->find($reservation_id);
         // dd($reservation);
@@ -200,12 +208,8 @@ class Dashboard extends Component
         foreach ($availability as $key => $value) {
             // Busca el vehículo correspondiente en la reserva actual
             $carro = $reservation->carros->firstWhere('id', $key);
-            // dd($carro);
-            // Si la disponibilidad es 0 o menor, y el vehículo está en la reserva,
-            // y la cantidad reservada es mayor a la disponibilidad, muestra un mensaje de error
             if (
                 $value->availability <= 0 &&
-                $carro &&
                 $carro->pivot->total_reservas > abs($value->availability)
             ) {
                 $this->dispatch(
@@ -220,17 +224,12 @@ class Dashboard extends Component
         try {
             $res = DB::transaction(function () use ($reservation) {
                 // Actualiza la fecha y hora de la reserva
-
                 $reservation->update([
                     'fecha_reservacion' => $this->dateResUp,
                     'hora_reservacion' => $this->timeResUp
                 ]);
+                $this->eventCalendar($reservation, $reservation->carros);;
 
-                try {
-                    $this->eventCalendar($reservation, $reservation->carros);;
-                } catch (\Exception $e) {
-                    throw $e;
-                }
                 return $reservation;
             });
             try {
@@ -246,9 +245,6 @@ class Dashboard extends Component
             Log::error("Error al actualizar la fecha y hora de la reservación {$this->reservation_id} - {$e}");
             $this->dispatch('notify', msj: 'Hubo un error por favor intentelo mas tarde', type: 'error', method: 'errorUpdateDateReservation');
         }
-        // Si todos los vehículos están disponibles, actualiza la reserva
-        //
-        // dd($this->dateResUp, $this->timeResUp, $this->reservation_id, $availability, 'updateDateReservation');
     }
 
     protected function eventCalendar($reservation, $vehicles)
@@ -279,5 +275,104 @@ class Dashboard extends Component
             Log::error("Error al actualizar el evento en el calendario para la reservacion {$reservation->id} - {$e}");
             throw $e->getMessage();
         }
+    }
+
+    #[On('resendMailReservation')]
+    public function resendMail($reservation_id)
+    {
+        // dd($reservation_id);
+        try {
+            $reservation = Reservations::find($reservation_id);
+            if (!$reservation) {
+                $this->dispatch('notify', msj: 'Reservación no encontrada', type: 'error', method: 'resendMail');
+                return;
+            }
+            Mail::to('alopez@beneficiosvacacionales.mx')->send(new ReservationMail($reservation));
+            $this->dispatch('notify', msj: 'Correo reenviado correctamente', type: 'success', method: 'resendMail');
+        } catch (\Exception $e) {
+            Log::error("Error al reenviar el correo de la reservación {$reservation_id} - {$e}");
+            $this->dispatch('notify', msj: 'Hubo un error al reenviar el correo, por favor intente más tarde.', type: 'error', method: 'resendMail');
+        }
+    }
+
+    #[On('sendMailRefund')]
+    public function mailRefund($reservation_id)
+    {
+        try {
+            $reservation = Reservations::find($reservation_id);
+            if (!$reservation) {
+                $this->dispatch('notify', msj: 'Reservación no encontrada', type: 'error', method: 'sendMailRefund');
+                return;
+            }
+            Mail::to('alopez@beneficiosvacacionales.mx')->send(new RefundMail($reservation));
+            $this->dispatch('notify', msj: 'Correo reenviado correctamente al cliente', type: 'success', method: 'sendMailRefund');
+        } catch (\Exception $e) {
+            Log::error("Error al reenviar el correo de reembolso de la reservación {$reservation_id} - {$e}");
+            $this->dispatch('notify', msj: 'Hubo un error al reenviar el correo, por favor intente más tarde.', type: 'error', method: 'sendMailRefund');
+        }
+    }
+
+    public function addObservations()
+    {
+        $this->resetValidation();
+
+        $this->validate([
+            'observations' => 'required|string|max:500',
+        ], [
+            'observations.required' => 'Las observaciones son obligatorias.',
+            'observations.string' => 'Las observaciones deben ser un texto.',
+            'observations.max' => 'Las observaciones no pueden exceder los 500 caracteres.',
+        ]);
+
+        try {
+            $note = DB::transaction(function () {
+                $notes = Note::create(
+                    [
+                        'id_user' => auth()->user()->id,
+                        'note' => $this->observations
+                    ]
+                );
+                $notes->reservation()->associate(Reservations::find($this->reservation_id));
+                return $notes->save();
+            });
+            if (!$note) {
+                $this->dispatch('notify', msj: 'No se pudo agregar la observación', type: 'error', method: 'addObservations');
+                return;
+            }
+            $this->dispatch('notify', msj: 'Se agregaron las observaciones correctamente', type: 'success', method: 'addObservations');
+            $this->reset('reservation_id', 'observations');
+        } catch (\Exception $e) {
+            Log::error("Error al agregar observaciones a la reservación {$this->reservation_id} - {$e}");
+            $this->dispatch('notify', msj: 'Hubo un error por favor intentelo mas tarde', type: 'error', method: 'addObservations');
+        }
+    }
+
+    public function generateQr()
+    {
+        $this->resetValidation();
+        $this->validate([
+            'cnombre' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'cemail' => 'required|email',
+            'gfnombre' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'gfemail' => 'required|email',
+        ], [
+            'cnombre.required' => 'El nombre es obligatorio.',
+            'cnombre.regex' => 'El nombre solo puede contener letras y espacios.',
+            'cemail.required' => 'El correo electrónico es obligatorio.',
+            'cemail.email' => 'El correo electrónico debe ser una dirección válida.',
+            'gfnombre.required' => 'El nombre del regalo es obligatorio.',
+            'gfnombre.regex' => 'El nombre del regalo solo puede contener letras y espacios.',
+            'gfemail.required' => 'El correo electrónico del regalo es obligatorio.',
+            'gfemail.email' => 'El correo electrónico del regalo debe ser una dirección válida.',
+        ]);
+        dd($this->reservation_id, 'qr reservation');
+
+        $reservation = DB::transaction(function () {
+            try {
+                //code...
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        });
     }
 }

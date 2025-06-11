@@ -77,13 +77,17 @@
                                             wire:click.prevent="$dispatch('show-modal-update-date',{reservation_id:{{$item->id}}})">Cambiar fecha y hora</button>
                                         <button class="dropdown-item"
                                             {{ $item->estatus === 1 || $item->estatus === 8 ? '':'disabled' }}
-                                            href="#">Enviar correo</button>
-                                        <button class="dropdown-item" href="#">Enviar correo de reembolso</button>
+                                            wire:click="$dispatch('resendMailReservation',{reservation_id:{{ $item->id }}})">Enviar correo</button>
+                                        <button class="dropdown-item"
+                                            wire:click="$dispatch('sendMailRefund',{reservation_id:{{ $item->id }}})"
+                                        >Enviar correo de reembolso</button>
                                         <button class="dropdown-item"
                                             {{ $item->estatus === 1 || $item->estatus === 8 ? '':'disabled' }}
                                             href="#">Reenviar términos</button>
-                                        <button class="dropdown-item" href="#">Nota de reserva</button>
-                                        <button class="dropdown-item" href="#">Generar QR de regalo</button>
+                                        <button class="dropdown-item"
+                                            wire:click="$dispatch('show-modal-add-notes',{reservation_id:{{ $item->id }}})">Nota de reserva</button>
+                                        <button class="dropdown-item"
+                                            wire:click="$dispatch('generate-qr-reservation',{reservation_id:{{ $item->id }}})">Generar QR de regalo</button>
                                     </div>
                                 </div>
                             </td>
@@ -100,7 +104,7 @@
 
                     </tbody>
                 </table>
-                <div class="mt-3">
+                <div class="p-15">
                     {{ $reservations->links('vendor.livewire.customer') }}
                 </div>
             </div>
@@ -226,6 +230,7 @@
         </div>
     </div>
 
+    {{-- modal update date reservation --}}
     <div wire:ignore.self class="modal fade" id="updateDateReservation">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -265,6 +270,78 @@
         </div>
     </div>
 
+    {{-- modal add observations --}}
+    <div wire:ignore.self class="modal fade" id="addNotesRes">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleObservationsRes">Agregar Estatus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <form wire:submit.prevent="addObservations" id="formObservations">
+                    {{-- <input type="hidden" wire:model="reservation_id" id="reservation_id"> --}}
+                    <input type="hidden" wire:model="reservation_id" id="reservation_id">
+                    <div class="modal-body">
+
+                        <div class="col-md-12">
+                            <label class="form-label" for="exampleFormControlTextarea1">Observaciones</label>
+                            <textarea class="form-control @error('observations') is-invalid @enderror" id="exampleFormControlTextarea1" rows="3" wire:model="observations"></textarea>
+                            @error('observations') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-primary" type="submit">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div wire:ignore.self class="modal fade" id="generateQrReservation">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" wire:ignore>
+                    {{-- <h5 class="modal-title">Generar QR de regalo</h5> --}}
+                    <h5 class="modal-title" id="titleGenerateQr"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <form wire:submit.prevent="generateQr" id="formObservations">
+                    {{-- <input type="hidden" wire:model="reservation_id" id="reservation_id"> --}}
+                    <input type="hidden" wire:model="reservation_id" id="reservation_id">
+                    <div class="modal-body row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="validationDefault04">Nombre de quien regala:</label>
+                            <input class="form-control @error('cnombre') is-invalid @enderror" type="text" placeholder="Nombre" wire:model="cnombre" required>
+                            @error('cnombre') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="exampleFormControlTextarea1">Correo de quien regala:</label>
+                            <input class="form-control @error('cemail') is-invalid @enderror" type="text" placeholder="Correo" wire:model="cemail" required>
+                            @error('cemail') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="validationDefault04">Nombre del beneficiario:</label>
+                            <input class="form-control @error('gfnombre') is-invalid @enderror" type="text" placeholder="Nombre" wire:model="gfnombre" required>
+                            @error('gfnombre') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="exampleFormControlTextarea1">Correo del beneficiario:</label>
+                            <input class="form-control @error('gfemail') is-invalid @enderror" type="text" placeholder="Correo" wire:model="gfemail" required>
+                            @error('gfemail') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-primary" type="submit">Generar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 </div>
 
@@ -276,6 +353,7 @@
         @this.reservation_id = event.reservation_id
     });
 
+    // Evento para mostrar el modal de detalles de la reservación
     // Evento para mostrar el modal de detalles de la reservación
     $wire.on('show-modal-reservation', (event) => {
         // Limpia el contenido previo del modal para evitar duplicados o datos obsoletos
@@ -298,7 +376,7 @@
         );
 
         // URL base para archivos S3
-        let urlS3 = "{{ config('secret.url_s3') }}";
+        const urlS3 = "{{ config('secret.url_s3') }}";
 
         // Sincroniza datos del cliente con Livewire
         @this.rnombre = event.reservation.nombre;
@@ -306,6 +384,21 @@
         @this.rtelefono = event.reservation.telefono;
         @this.remail = event.reservation.email;
         @this.reservation_id = event.reservation.id;
+
+        // Construye las notas de la reservación si existen
+        let notes = '';
+        if (event.reservation.note && event.reservation.note.length > 0) {
+            notes = event.reservation.note.map(note => `
+                <div class="your-msg">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <span class="f-w-500">${note.user.name} <span>${note.created_at}</span></span>
+                            <p>${note.note}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         // Construye el bloque de detalles del cliente
         let detailsCustom = `
@@ -327,14 +420,22 @@
                         Ver Terminos y condiciones
                     </a>
                 </div>
-                <div class="col-md-12 d-flex flex-column gap-1">
+                <div class="col-md-6 d-flex flex-column gap-1">
                     <ul class="d-flex flex-column gap-1">
                         <li><strong>Nombre: </strong>${event.reservation.nombre ?? ''} ${event.reservation.apellidos ?? ''}</li>
                         <li><strong>Correo: </strong>${event.reservation.email ?? 'N/A'}</li>
                         <li><strong>Telefono: </strong>${event.reservation.telefono ?? 'N/A'}</li>
                     </ul>
                 </div>
+                ${event.reservation.note && event.reservation.note.length > 0 ? `
+                <div class="b-t-secondary col-md-12 d-flex flex-column gap-1">
+                    <h5 class="mt-3">Notas de la reservación</h5>
+                    <div class="social-chat">
+                        ${notes}
+                    </div>
+                </div>` : ''}
             </div>
+            <!-- Formulario para editar datos del cliente (oculto por defecto) -->
             <form wire:submit.prevent="updateCustomer" class="row g-3 needs-validation d-none" id="formCustomer">
                 <input type="hidden" wire:model="reservation_id">
                 <div class="col-md-6 mb-2">
@@ -426,6 +527,41 @@
 
     });
 
+    $wire.on('show-modal-add-notes',(event) => {
+        // Limpia el contenido previo del modal para evitar duplicados o datos obsoletos
+        console.log(event, "Evento para mostrar el modal de agregar notas");
+        @this.reservation_id = event.reservation_id;
+        $("#titleObservationsRes").html(`Agregar nota a la reservación #${event.reservation_id}`);
+        $("#addNotesRes").modal("show");
+    });
+
+    $wire.on('generate-qr-reservation', (event) => {
+        // Limpia el contenido previo del modal para evitar duplicados o datos obsoletos
+        console.log(event, "Evento para generar QR de la reservación");
+
+        @this.reservation_id = event.reservation_id;
+        Swal.fire({
+            title: "¿Está seguro de generar un regalo??",
+            text: "Una vez generado, se cancelará la reservación actual y se creará una codigo QR de regalo.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#16C7F9",
+            cancelButtonColor: "#FC4438",
+            confirmButtonText: "Si, generalo!",
+          }).then((result) => {
+            if (result.isConfirmed) {
+                $("#generateQrReservation").modal("show");
+                $("#titleGenerateQr").html(`Generar QR de regalo para la reservación #${event.reservation_id}`);
+                // $wire.dispatch('generateQrReservation', { reservation_id: event.reservation_id });
+            //   Swal.fire({
+            //     title: "Deleted!",
+            //     text: "Your file has been deleted.",
+            //     icon: "success",
+            //   });
+            }
+          });
+    });
+
     // Escucha el evento 'notify' de Livewire
     $wire.on('notify', (event) => {
         // Manejadores para cada método posible
@@ -477,6 +613,28 @@
                     title: event.msj,
                 });
             },
+            resendMail:() => {
+
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            sendMailRefund:() => {
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            addObservations: () => {
+                $("#addNotesRes").modal("hide"); // Cierra el modal
+                $wire.$refresh(); // Refresca el componente
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            }
+
         };
 
         // Ejecuta el manejador correspondiente o muestra advertencia si no existe
