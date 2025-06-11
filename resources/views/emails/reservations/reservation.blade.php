@@ -169,7 +169,7 @@
                                                                 style="padding-bottom:15px;padding-left:10px;padding-right:10px;text-align:center;width:100%;">
                                                                 <h1
                                                                     style="margin: 0; color: #ffffff; direction: ltr; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 40px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;">
-                                                                    <strong>ha sido actualizada.</strong>
+                                                                    <strong>ha sido confirmada.</strong>
                                                                 </h1>
                                                             </td>
                                                         </tr>
@@ -249,7 +249,7 @@
                         </tbody>
                     </table>
 
-                    @if ($reservation->fecha_reservacion !== null && $reservation->hora_reservacion !== null)
+                    @if ($order->fecha_reservacion !== null && $order->hora_reservacion !== null)
 
                         <table class="row row-4" align="center" width="100%" border="0" cellpadding="0"
                                 cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -292,7 +292,7 @@
                                                                             style="color:#ffffff;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;font-weight:400;line-height:150%;text-align:center;mso-line-height-alt:24px;">
 
                                                                             <p style="margin: 0; word-break: break-word;"><span
-                                                                                    style="color: #000101;"><strong>{!! $reservation->date_format !!}</strong></span>
+                                                                                    style="color: #000101;"><strong>{!! $order->date_format !!}</strong></span>
                                                                             </p>
                                                                         </div>
                                                                     </td>
@@ -357,7 +357,7 @@
                                                                                     // '15:30' => '15:00 PM',
                                                                                     '17:00' => '16:30 PM',
                                                                                 ];
-                                                                                $hora = $reservation->hora_reservacion;
+                                                                                $hora = $order->hora_reservacion;
                                                                             @endphp
                                                                             @if (isset($checkInTimes[$hora]))
                                                                                 <p style="margin: 0; word-break: break-word;">
@@ -417,7 +417,7 @@
                                                                         <div
                                                                             style="color:#ffffff;font-family:Arial, Helvetica Neue, Helvetica, sans-serif;font-size:16px;font-weight:400;line-height:150%;text-align:center;mso-line-height-alt:24px;">
                                                                             <p style="margin: 0; word-break: break-word;"><span
-                                                                                    style="color: #000101;"><strong>{!! date('h:i A', strtotime($reservation->hora_reservacion)) !!}</strong></span>
+                                                                                    style="color: #000101;"><strong>{!! date('h:i A', strtotime($order->hora_reservacion)) !!}</strong></span>
                                                                             </p>
                                                                         </div>
                                                                     </td>
@@ -529,7 +529,7 @@
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word; display: flex;justify-content: center;">
                                                         <tr>
                                                             <td class="pad">
-                                                                @foreach ($reservation->carros as $item)
+                                                                @foreach ($order->carros as $item)
                                                                     <div class="levelOne" style="margin-left: 0;">
                                                                         <ul class="leftList" start="1"
                                                                             style="margin-top: 0; margin-bottom: 0; padding: 0; padding-left: 20px; font-weight: 400; text-align: left; color: #101112; direction: ltr; font-family: Arial,Helvetica Neue,Helvetica,sans-serif; font-size: 16px; letter-spacing: 0; line-height: 120%; mso-line-height-alt: 19.2px; list-style-type: disc;">
@@ -547,7 +547,7 @@
                                                                         style="margin-top: 0; margin-bottom: 0; padding: 0; padding-left: 20px; font-weight: 400; text-align: left; color: #101112; direction: ltr; font-family: Arial,Helvetica Neue,Helvetica,sans-serif; font-size: 16px; letter-spacing: 0; line-height: 120%; mso-line-height-alt: 19.2px; list-style-type: circle;">
                                                                         <li
                                                                             style="margin-bottom: 0; text-align: left;">
-                                                                            <strong>SubTotal:</strong>&nbsp;&euro;{{ number_format($reservation->importe, 2) }}
+                                                                            <strong>SubTotal:</strong>&nbsp;&euro;{{ number_format($order->importe, 2) }}
                                                                         </li>
                                                                         {{-- <li style="margin-bottom: 0; text-align: left;"><strong>Tasa forestal:</strong>&nbsp;($10 per ATV)</li> --}}
                                                                         {{-- <li
@@ -556,7 +556,7 @@
                                                                         </li> --}}
                                                                         <li
                                                                             style="margin-bottom: 0; text-align: left;">
-                                                                            <strong>Total:</strong>&nbsp;&euro;{{ number_format($reservation->total, 2) }}
+                                                                            <strong>Total:</strong>&nbsp;&euro;{{ number_format($order->total, 2) }}
                                                                         </li>
                                                                     </ul>
                                                                 </div>

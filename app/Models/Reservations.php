@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Reservations extends Model
 {
+    use HasFactory;
+
     protected $table = 'reservaciones';
 
     protected $primaryKey = 'id';
@@ -69,6 +73,15 @@ class Reservations extends Model
     public function coupon(): BelongsToMany
     {
         return $this->belongsToMany(Code::class, 'codigo_reserva', 'reservacion_id', 'cupon_id')->withPivot('created_at', 'updated_at');
+    }
+    /**
+     * The note that belong to the Reservations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function note(): HasMany
+    {
+        return $this->hasMany(Note::class, 'id_reservation', 'id');
     }
 
     public function getFullNameAttribute()

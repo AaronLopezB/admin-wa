@@ -48,28 +48,28 @@
                                     <div class="lang selected" data-value="en"><i
                                             class="flag-icon flag-icon-us"></i><span class="lang-txt">English<span>
                                                 (US)</span></span></div>
-                                    <div class="lang" data-value="de"><i class="flag-icon flag-icon-de"></i><span
-                                            class="lang-txt">Deutsch</span></div>
+                                    {{-- <div class="lang" data-value="de"><i class="flag-icon flag-icon-de"></i><span
+                                            class="lang-txt">Deutsch</span></div> --}}
                                     <div class="lang" data-value="es"><i class="flag-icon flag-icon-es"></i><span
                                             class="lang-txt">Español</span></div>
-                                    <div class="lang" data-value="fr"><i class="flag-icon flag-icon-fr"></i><span
+                                    {{-- <div class="lang" data-value="fr"><i class="flag-icon flag-icon-fr"></i><span
                                             class="lang-txt">Français</span></div>
                                     <div class="lang" data-value="pt"><i class="flag-icon flag-icon-pt"></i><span
                                             class="lang-txt">Português<span> (BR)</span></span></div>
                                     <div class="lang" data-value="cn"><i class="flag-icon flag-icon-cn"></i><span
                                             class="lang-txt">简体中文</span></div>
                                     <div class="lang" data-value="ae"><i class="flag-icon flag-icon-ae"></i><span
-                                            class="lang-txt">لعربية <span> (ae)</span></span></div>
+                                            class="lang-txt">لعربية <span> (ae)</span></span></div> --}}
                                 </div>
                             </div>
                         </li>
-                        <li class="fullscreen-body"> <span><svg id="maximize-screen">
+                        {{-- <li class="fullscreen-body"> <span><svg id="maximize-screen">
                                     <use href="{{ asset('assets/svg/icon-sprite.svg#full-screen') }}"></use>
-                                </svg></span></li>
+                                </svg></span></li> --}}
                         <li> <span class="header-search"><svg>
                                     <use href="{{ asset('assets/svg/icon-sprite.svg#search') }}"></use>
                                 </svg></span></li>
-                        <li class="onhover-dropdown"><svg>
+                        {{-- <li class="onhover-dropdown"><svg>
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#star') }}"></use>
                             </svg>
                             <div class="onhover-show-div bookmark-flip">
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </li>
+                        </li> --}}
                         <li>
                             <div class="mode"><svg>
                                     <use href="{{ asset('assets/svg/icon-sprite.svg#moon') }}"></use>
@@ -234,18 +234,18 @@
                             <div class="d-flex profile-media"><img class="b-r-10"
                                     src="{{ asset('assets/images/dashboard/profile.png') }}" alt="">
                                 <div class="flex-grow-1"><span>{{ ucfirst(auth()?->user()?->name) }}</span>
-                                    <p class="mb-0">test - role <i
+                                    <p class="mb-0">{{ Str::limit(ucfirst(auth()?->user()?->email),10) }} {{-- - {{ auth()?->user()?->getRoleNames()[0] }} --}} <i
                                             class="middle fa-solid fa-angle-down"></i></p>
                                 </div>
                             </div>
                             <ul class="profile-dropdown onhover-show-div">
                                 <li><a href=""><i
                                             data-feather="user"></i><span>My Profile </span></a></li>
-                                <li><a href=""><i
+                                {{-- <li><a href=""><i
                                             data-feather="mail"></i><span>Inbox</span></a></li>
                                 <li><a href=""><i
                                             data-feather="file-text"></i><span>Taskboard</span></a>
-                                </li>
+                                </li> --}}
                                 <li><a href=""><i
                                             data-feather="settings"></i><span>Settings</span></a>
                                 </li>
