@@ -93,12 +93,12 @@ class Reservations extends Model
     {
         App::setLocale('es');
         Carbon::setLocale('es');
-        return $this->fecha_reservacion ? Carbon::parse($this->fecha_reservacion)->translatedFormat('d M, Y') : null;
+        return $this->fecha_reservacion ? Carbon::parse($this->fecha_reservacion)->translatedFormat('d M, Y') : '--/--/----';
     }
 
     public function getTimeFormatAttribute()
     {
-        return date('h:i A', strtotime($this->hora_reservacion));
+        return ($this->hora_reservacion != null ? date('h:i A', strtotime($this->hora_reservacion)) : "--:--");;
     }
 
     public function getCreatedFormatAttribute()
@@ -129,5 +129,15 @@ class Reservations extends Model
     public function persons()
     {
         return $this->hasMany(VehiclesPerson::class, 'id_reserva', 'id');
+    }
+
+    /**
+     * Get all of the logs for the Reservations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function logs(): HasMany
+    {
+        return $this->hasMany(Log::class, 'reservation_id', 'id');
     }
 }

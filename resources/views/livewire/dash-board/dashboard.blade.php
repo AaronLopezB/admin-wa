@@ -83,11 +83,14 @@
                                         >Enviar correo de reembolso</button>
                                         <button class="dropdown-item"
                                             {{ $item->estatus === 1 || $item->estatus === 8 ? '':'disabled' }}
-                                            href="#">Reenviar términos</button>
+                                            wire:click="$dispatch('resendTerms',{reservation_id:{{ $item->id }}})">Reenviar términos</button>
                                         <button class="dropdown-item"
                                             wire:click="$dispatch('show-modal-add-notes',{reservation_id:{{ $item->id }}})">Nota de reserva</button>
                                         <button class="dropdown-item"
                                             wire:click="$dispatch('generate-qr-reservation',{reservation_id:{{ $item->id }}})">Generar QR de regalo</button>
+                                        <button class="dropdown-item"
+                                        {{ $item->estatus === 1 || $item->estatus === 8 ? '':'disabled' }}
+                                            wire:click="$dispatch('cancelled-reservation',{reservation_id:{{ $item->id }}})">Cancelar reservacion</button>
                                     </div>
                                 </div>
                             </td>
@@ -505,8 +508,6 @@
 
     $(document).on("click","#editCustomer", function() {
         let reservation_id =  $(this).data('id');
-        console.log("Editando cliente con ID: " + reservation_id);
-        // $(this).addClass("d-none");
         $("#formCustomer").removeClass("d-none");
         $("#data-customer").addClass('d-none');
         // $wire.dispatch('editCustomer', { reservation_id: reservation_id });
@@ -548,18 +549,28 @@
             confirmButtonColor: "#16C7F9",
             cancelButtonColor: "#FC4438",
             confirmButtonText: "Si, generalo!",
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
                 $("#generateQrReservation").modal("show");
                 $("#titleGenerateQr").html(`Generar QR de regalo para la reservación #${event.reservation_id}`);
-                // $wire.dispatch('generateQrReservation', { reservation_id: event.reservation_id });
-            //   Swal.fire({
-            //     title: "Deleted!",
-            //     text: "Your file has been deleted.",
-            //     icon: "success",
-            //   });
             }
-          });
+        });
+    });
+
+    $wire.on('cancelled-reservation', (event) => {
+        Swal.fire({
+            title: "¿Está seguro de cancelar la reservación?",
+            text: "Una vez cancelada, no podrá recuperarla.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#16C7F9",
+            cancelButtonColor: "#FC4438",
+            confirmButtonText: "Si, cancelar!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $wire.dispatch('cancelled-onli-reservation', { reservation_id: event.reservation_id });
+            }
+        });
     });
 
     // Escucha el evento 'notify' de Livewire
@@ -628,6 +639,21 @@
             },
             addObservations: () => {
                 $("#addNotesRes").modal("hide"); // Cierra el modal
+                $wire.$refresh(); // Refresca el componente
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            generateQr:() => {
+                $("#generateQrReservation").modal("hide"); // Cierra el modal
+                $wire.$refresh(); // Refresca el componente
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            cancelled:() => {
                 $wire.$refresh(); // Refresca el componente
                 Toast.fire({
                     icon: event.type,
