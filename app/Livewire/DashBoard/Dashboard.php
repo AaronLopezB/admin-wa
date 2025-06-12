@@ -2,12 +2,10 @@
 
 namespace App\Livewire\DashBoard;
 
-use App\Mail\Reservation\RefundMail;
-use App\Mail\Reservation\ReservationMail;
-use App\Mail\ReservationReassignmentMail;
-use App\Models\Note;
 use Carbon\Carbon;
+use App\Models\Note;
 use Livewire\Component;
+use App\Models\Log as Logs;
 use Livewire\Attributes\On;
 use App\Models\Reservations;
 use Livewire\WithPagination;
@@ -15,9 +13,16 @@ use Livewire\Attributes\Lazy;
 use App\Services\CalendarService;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
+use App\Mail\Reservation\TermsMail;
 use Illuminate\Support\Facades\Log;
+use App\Mail\Reservation\RefundMail;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
+use App\Mail\Reservation\CancelledMail;
+use App\Mail\Reservation\ReservationMail;
+use App\Mail\ReservationReassignmentMail;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Mail\Reservation\GiftReservationMail;
+use Intervention\Image\Laravel\Facades\Image;
 
 #[Lazy]
 class Dashboard extends Component
@@ -312,6 +317,23 @@ class Dashboard extends Component
         }
     }
 
+    #[On('resendTerms')]
+    public function resendTerms($reservation_id)
+    {
+        try {
+            $reservation = Reservations::find($reservation_id);
+            if (!$reservation) {
+                $this->dispatch('notify', msj: 'Reservación no encontrada', type: 'error', method: 'resendTerms');
+                return;
+            }
+            Mail::to('alopez@beneficiosvacacionales.mx')->send(new TermsMail($reservation));
+            $this->dispatch('notify', msj: 'Correo reenviado correctamente al cliente', type: 'success', method: 'resendTerms');
+        } catch (\Exception $e) {
+            Log::error("Error al reenviar los términos y condiciones de la reservación {$reservation_id} - {$e}");
+            $this->dispatch('notify', msj: 'Hubo un error al reenviar el correo, por favor intente más tarde.', type: 'error', method: 'resendTerms');
+        }
+    }
+
     public function addObservations()
     {
         $this->resetValidation();
@@ -365,14 +387,199 @@ class Dashboard extends Component
             'gfemail.required' => 'El correo electrónico del regalo es obligatorio.',
             'gfemail.email' => 'El correo electrónico del regalo debe ser una dirección válida.',
         ]);
-        dd($this->reservation_id, 'qr reservation');
 
-        $reservation = DB::transaction(function () {
+        $reserv = DB::transaction(function () {
             try {
-                //code...
-            } catch (\Throwable $th) {
-                //throw $th;
+                $reservation = Reservations::with('carros', 'card', 'coupon')->find($this->reservation_id);
+
+                if (!$reservation) {
+                    throw new \Exception("Reservación original no encontrada");
+                }
+
+                // Duplicar la reservación
+                $duplicateReservation = $reservation->replicate();
+                $duplicateReservation->nombre = $this->cnombre;
+                $duplicateReservation->apellidos = "";
+                $duplicateReservation->email = $this->cemail;
+                $duplicateReservation->name_gift = $this->gfnombre;
+                $duplicateReservation->mail_gift = $this->gfemail;
+                $duplicateReservation->estatus = 8;
+                $duplicateReservation->fecha_reservacion = null;
+                $duplicateReservation->hora_reservacion = null;
+                $duplicateReservation->created = now();
+                $duplicateReservation->save();
+
+                // Duplicar relación carros
+                foreach ($reservation->carros as $car) {
+                    $duplicateReservation->carros()->attach($car->id, [
+                        'total_reservas' => $car->pivot->total_reservas,
+                        'is_delete' => 0,
+                        'total_cobrar' => $car->pivot->total_cobrar,
+                        // agrega aquí otros campos del pivot si existen
+                    ]);
+                }
+
+                // Duplicar relación card
+                if ($reservation->card) {
+                    $newCard = $duplicateReservation->card()->create($reservation->card->toArray());
+                    if (!$newCard) {
+                        throw new \Exception("No se pudo duplicar la tarjeta");
+                    }
+                }
+
+                // Duplicar relación coupon
+                if ($reservation->coupon) {
+                    $newCoupon = $duplicateReservation->coupon()->create($reservation->coupon->toArray());
+                    if (!$newCoupon) {
+                        throw new \Exception("No se pudo duplicar el cupón");
+                    }
+                }
+
+                // Cancelar la reserva original
+                try {
+                    $this->cancelReservation($reservation->id);
+                } catch (\Exception $e) {
+                    Log::error("Error al cancelar la reservación original {$this->reservation_id} - {$e}");
+                    throw $e;
+                }
+
+                // Generar y enviar QR
+                $this->generateImageQr($duplicateReservation);
+                try {
+                } catch (\Exception $e) {
+                    Log::error("Error al enviar el correo de reserva duplicada {$duplicateReservation->id} - {$e}");
+                    throw $e;
+                }
+
+
+                return [
+                    'msj' => 'Se generó el QR y se envió el correo correctamente',
+                    'method' => 'generateQr',
+                    'type' => 'success',
+                    'reservation' => $duplicateReservation
+                ];
+            } catch (\Exception $e) {
+                Log::error("Error al generar el QR y enviar el correo de reserva duplicada - {$e}");
+                return [
+                    'msj' => 'Hubo un error al generar el QR y enviar el correo, por favor intente más tarde.',
+                    'method' => 'generateQr',
+                    'type' => 'error'
+                ];
             }
         });
+
+        $this->dispatch('notify', msj: $reserv['msj'], type: $reserv['type'], method: 'generateQr');
+        $this->reset('reservation_id', 'cnombre', 'cemail', 'gfnombre', 'gfemail');
+        // dd($reserv);
+    }
+
+    protected function cancelReservation($reservation_id)
+    {
+        $reservation = Reservations::find($reservation_id);
+        if (!$reservation) {
+            $this->dispatch('notify', msj: 'Reservación no encontrada', type: 'error', method: 'cancelReservation');
+            return;
+        }
+        try {
+            DB::beginTransaction();
+            $reservation->update(['estatus' => 2]);
+            foreach ($reservation->carros as $car) {
+                // $car->pivot->is_delete = 1; // Marca el carro como eliminado
+                // $car->pivot->save();
+                $reservation->carros()->updateExistingPivot($car->id, ['is_delete' => 1]);
+            }
+            if ($reservation->id_calendar) {
+                $this->calendar->deleteEvent($reservation->id_calendar);
+            }
+            try {
+                Mail::to('alopez@beneficiosvacacionales.mx')->send(new CancelledMail($reservation));
+            } catch (\Exception $e) {
+                Log::error("Error al enviar el correo de cancelación de reservación {$reservation->id} - {$e}");
+                throw $e;
+            }
+
+            $log = Logs::create([
+                'movimiento' => 3,
+                'fecha_movimento' => now(),
+            ]);
+            $log->reservation()->associate($reservation);
+            $log->user_id = auth()->id();
+            $log->save();
+            DB::commit();
+            return $reservation;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error al cancelar la reservación {$reservation_id} - {$e}");
+            throw $e;
+        }
+    }
+
+    protected function generateImageQr($reservation)
+    {
+        $imgPath = public_path("imgs/Reserva_de_regalo_v2.png");
+        $img = Image::read($imgPath);
+        $nameQrImg = time() . ".png";
+        $path = public_path("imgs/gifts/qr/{$nameQrImg}");
+        QrCode::format('png')
+            ->size(600)
+            ->margin(1)
+            ->errorCorrection('H')
+            ->generate("https://world-adventures.es/redeem/gift/{$reservation->id}", $path);
+
+        $img->place(
+            $path,
+            "bottom-right",
+            1050,
+            350
+        );
+
+        $nameFriend = "$reservation->nombre $reservation->apellidos";
+        $img->text(
+            $nameFriend,
+            1650,
+            2670,
+            function ($font) {
+                $font->file(public_path('assets/fonts/Montserrat-Black.ttf'));
+                $font->size(70);
+                $font->color('#000000');
+                $font->align('center');
+                $font->valign('top');
+            }
+        );
+        $img->save(public_path("imgs/gifts/mail/{$nameQrImg}"));
+
+        $data = [
+            "id" => $reservation->id,
+            "name" => "$reservation->nombre $reservation->apellidos",
+            "qr_image" => $nameQrImg,
+        ];
+        try {
+            Mail::to("alopez@beneficiosvacacionales.mx")->send(new GiftReservationMail($data));
+        } catch (\Exception $e) {
+            Log::error("Error al enviar el correo de regalo {$reservation->id} - {$e}");
+            throw $e;
+        }
+        return [
+            'name' => $nameQrImg,
+            'path' => public_path("imgs/gifts/mail/{$nameQrImg}"),
+        ];
+    }
+
+    #[On('cancelled-onli-reservation')]
+    public function cancelled($reservation_id)
+    {
+        // dd($reservation_id, 'cancelled');
+        try {
+            $reservation = Reservations::find($reservation_id);
+            if (!$reservation) {
+                $this->dispatch('notify', msj: 'Reservación no encontrada', type: 'error', method: 'cancelled');
+                return;
+            }
+            $this->cancelReservation($reservation_id);
+            $this->dispatch('notify', msj: 'Reservación cancelada correctamente', type: 'success', method: 'cancelled');
+        } catch (\Exception $e) {
+            Log::error("Error al cancelar la reservación {$reservation_id} - {$e}");
+            $this->dispatch('notify', msj: 'Hubo un error al cancelar la reservación, por favor intente más tarde.', type: 'error', method: 'cancelled');
+        }
     }
 }

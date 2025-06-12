@@ -91,4 +91,24 @@ class CalendarService
             throw new \Exception('Error updating event: ' . $e->getMessage());
         }
     }
+
+    public function deleteEvent($eventId)
+    {
+        $service = new \Google_Service_Calendar($this->client);
+        $calendarId = config('services.googlecalendar.calendar_id');
+
+        try {
+            // $service->events->delete($calendarId, $eventId);
+            $event = $service->events->get($calendarId, $eventId);
+            if ($event->getStatus() === 'cancelled') {
+                // throw new \Exception('Event already cancelled.');
+                return $event;
+            }
+            $event/* ->setSummary("Cancelled - {$event->getSummary()}") */->setStatus('cancelled');
+            return $service->events->update($calendarId, $eventId, $event);
+        } catch (\Exception $e) {
+            logger()->error('Error deleting event: ' . $e->getMessage());
+            throw new \Exception('Error deleting event: ' . $e->getMessage());
+        }
+    }
 }
