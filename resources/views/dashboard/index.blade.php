@@ -36,7 +36,7 @@
                                 <h2 class="f-w-600">Bienvenido
                                     {{ \Illuminate\Support\Str::title(auth()->user()->name ?? '') }}!</h2>
                                 <p>Que tenga un buen día</p>
-                                <div class="whatsnew-btn"><a class="btn btn-outline-white" href="" target="_blank">Ver
+                                <div class="whatsnew-btn"><a class="btn btn-outline-white" href="{{ route('profile.edit') }}" target="_blank">Ver
                                         Perfil</a></div>
                             </div>
                         </div>
@@ -83,10 +83,10 @@
                                 <div class="dropdown icon-dropdown"><button class="btn dropdown-toggle"
                                         id="dealDropdown1" type="button" data-bs-toggle="dropdown"
                                         aria-expanded="false"><i class="icon-more-alt"></i></button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1"><a
-                                            class="dropdown-item" href="#">Today</a><a class="dropdown-item"
-                                            href="#">Yesterday</a><a class="dropdown-item" href="#">This
-                                            week</a></div>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1">
+                                        <a class="dropdown-item" href="#">Ver Reservaciones</a>
+                                        <a class="dropdown-item"href="#">Descargar</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -112,10 +112,10 @@
                                 <div class="dropdown icon-dropdown"><button class="btn dropdown-toggle"
                                         id="dealDropdown1" type="button" data-bs-toggle="dropdown"
                                         aria-expanded="false"><i class="icon-more-alt"></i></button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1"><a
-                                            class="dropdown-item" href="#">Today</a><a class="dropdown-item"
-                                            href="#">Yesterday</a><a class="dropdown-item" href="#">This
-                                            week</a></div>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1">
+                                        <a class="dropdown-item" href="#">Ver Reservaciones</a>
+                                        <a class="dropdown-item"href="#">Descargar</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -142,9 +142,8 @@
                                         data-bs-toggle="dropdown" aria-expanded="false"><i
                                             class="icon-more-alt"></i></button>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1">
-                                        <a class="dropdown-item" href="#">Today</a>
-                                        <a class="dropdown-item" href="#">Yesterday</a>
-                                        <a class="dropdown-item" href="#">This week</a>
+                                        <a class="dropdown-item" href="#">Ver Reservaciones</a>
+                                        <a class="dropdown-item"href="#">Descargar</a>
                                     </div>
                                 </div>
                             </div>
