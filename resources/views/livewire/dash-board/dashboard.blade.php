@@ -677,7 +677,7 @@
             altInput: true,
             altFormat: "F j, Y",
             dateFormat: "Y-m-d",
-            mindate: "today",
+            minDate: "today",
             onChange: function(selectedDates, dateStr, instance) {
                 // Actualiza el modelo de Livewire con la nueva fecha seleccionada
                 @this.set('dateResUp', dateStr);

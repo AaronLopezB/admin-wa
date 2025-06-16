@@ -17,7 +17,13 @@
                              @csrf
                                 <h4>Sign in to account</h4>
                                 <p>Enter your email & password to login</p>
-
+                                @if (session('alert'))
+                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></div>
+                                        <span class="txt-light"> {{ session('alert') }}</span>
+                                </div>
+                                @endif
                                 <div class="form-group">
                                     <label class="col-form-label">Email Address</label>
                                     <input id="email" type="email"  class="form-control @error('email') is-invalid @enderror" name="email" required autocomplete="email" autofocus placeholder="test@gmail.com">

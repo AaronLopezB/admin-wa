@@ -15,7 +15,7 @@ class Cars extends Model
         'numero',
         'nombre',
         'asientos',
-        'description',
+        'descripcion',
         'precio',
         'disponibles',
         'img',

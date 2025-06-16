@@ -90,40 +90,100 @@ class Profile extends Component
     #[On('disableAccountU')]
     public function disableAccountCurrend()
     {
-        dd($this->customerPasword, 'customerPasword');
+        // dd($this->customerPasword, 'customerPasword');
         $this->resetValidation();
-        $this->validate([
-            'customerPasword' => 'required|string|min:8|current_password',
-        ]);
         try {
+            $this->validate([
+                'customerPasword' => 'required|string|min:8|current_password',
+            ]);
+
+            // dd(auth()->user()->hasRole('Admin'));
+            if (!auth()->user()->hasRole('Admin')) {
+                throw new \Exception("No puedes desactivar tu cuenta ", 1);
+            }
+
             $user = User::where('status', 'active')->find(auth()->id());
             if (!$user) {
                 throw new \Exception("No existe el usuario", 1);
             }
-            $user->status = 'inactive';
+            $user->status = 'deactivate';
             $user->save();
-            auth()->logout();
+            // auth()->logout();
             $this->dispatch(
                 'alert',
                 type: 'success',
                 msj: 'Cuenta desactivada correctamente.',
-                method: 'updateUser'
+                method: 'disableAccountCurrend'
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
+            // dd($e);
+            // Log::error("message: " . $e->errors() . " - Line: " . $e->getLine());
+            $this->dispatch(
+                'alert',
+                type: 'error',
+                msj: "La contraseña actual es incorrecta.",
+                method: 'disableAccountCurrendError'
+            );
+        } catch (\Exception $e) {
+            // dd($e);
             Log::error("message: " . $e->getMessage() . " - Line: " . $e->getLine());
             $this->dispatch(
                 'alert',
                 type: 'error',
-                msj: 'Error de validación: ' . $e->getMessage(),
-                method: 'updateUser'
+                msj: 'Error al desactivar la cuenta: ' . $e->getMessage(),
+                method: 'disableAccountCurrendError'
+            );
+        }
+    }
+
+    #[On('activeAccountU')]
+    public function activeAccountCurrend()
+    {
+        try {
+            $user = User::where('status', 'deactivate')->find(auth()->id());
+            if (!$user) {
+                throw new \Exception("No existe el usuario", 1);
+            }
+            $user->status = 'active';
+            $user->save();
+            $this->dispatch(
+                'alert',
+                type: 'success',
+                msj: 'Cuenta activada correctamente.',
+                title: 'Cuenta activada',
+                method: 'activeAccountCurrend'
             );
         } catch (\Exception $e) {
             Log::error("message: " . $e->getMessage() . " - Line: " . $e->getLine());
             $this->dispatch(
                 'alert',
                 type: 'error',
-                msj: 'Error al desactivar la cuenta: ' . $e->getMessage(),
-                method: 'updateUser'
+                msj: 'Error al activar la cuenta: ' . $e->getMessage(),
+                title: 'Error al activar la cuenta',
+                method: 'activeAccountCurrend'
+            );
+        }
+    }
+
+    #[On('logoutUser')]
+    public function logoutUser()
+    {
+        try {
+            auth()->logout();
+
+            session()->invalidate();
+
+            session()->regenerateToken();
+            session()->flash('alert', 'Sesión cerrada correctamente.');
+            $this->redirect(route('login', absolute: false));
+        } catch (\Exception $e) {
+            Log::error("message: " . $e->getMessage() . " - Line: " . $e->getLine());
+            $this->dispatch(
+                'alert',
+                type: 'error',
+                msj: 'Error al cerrar sesión: ' . $e->getMessage(),
+                title: 'Error al cerrar sesión',
+                method: 'logoutUser'
             );
         }
     }

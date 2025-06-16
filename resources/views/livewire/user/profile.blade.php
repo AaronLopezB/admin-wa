@@ -69,12 +69,12 @@
                                         {{ auth()?->user()?->getRoleNames()[0] }}</span>
                                 </div>
                             </div>
-                            {{-- <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div class="col-lg-3 col-md-4 col-sm-6">
                                 <div class="ttl-info text-start pb-0">
-                                    <h6><i class="fa-solid fa-location-arrow pe-2"></i>Location</h6>
-                                    <span>B69 Libby Street Beverly Hills</span>
+                                    <h6><i class="fa-solid fa-tag pe-2"></i>Estatus</h6>
+                                    <span>{{ auth()?->user()?->status }}</span>
                                 </div>
-                            </div> --}}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                                                 <h6>Tasks</h6>
                                             </div>
                                         </a></li>
-                                    <li class="nav-item"><a class="nav-link" id="team-project-tab" data-bs-toggle="pill"
+                                    <li class="nav-item"><a class="nav-link active" id="team-project-tab" data-bs-toggle="pill"
                                             href="#team-project" role="tab" aria-controls="team-project"
                                             aria-selected="false">
                                             <div class="nav-rounded">
@@ -780,15 +780,31 @@
                                                     <div class="col-md-3"><label class="form-label mb-0">Eliminar cuenta</label></div>
                                                     <div class="col-md-9">
 
-                                                        <div class="common-flex mt-3"><a
-                                                                class="btn button-light-danger {{ auth()->user()->hasRole('Admin') ? '' : 'disabled' }}"
-                                                                @if(auth()->user()->hasRole('Admin'))
+                                                        <div class="common-flex"><a
+                                                                class="btn button-light-danger {{ auth()->user()->hasRole('Admin')  && auth()->user()->status !== 'deactivate'  ? '' : 'disabled' }}"
+                                                                @if(auth()->user()->hasRole('Admin') && auth()->user()->status !== 'deactivate')
                                                                     wire:click="$dispatch('disableAccount')"
                                                                 @else
                                                                     href="#!"
                                                                 @endif
                                                                 role="button">Desactivar cuenta</a><a class="btn btn-danger" href="#!"
                                                                 role="button">Eliminar cuenta</a></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-md-3 g-2">
+                                                    <div class="col-md-3"><label class="form-label mb-0">Activar cuenta</label></div>
+                                                    <div class="col-md-9">
+
+                                                        <div class="common-flex "><a
+                                                                class="btn button-light-info {{ auth()->user()->hasRole('Admin') && auth()->user()->status == 'deactivate' ? '' : 'disabled' }}"
+                                                                @if(auth()->user()->hasRole('Admin') && auth()->user()->status == 'deactivate')
+                                                                    {{-- wire:click="$dispatch('enableAccount')" --}}
+                                                                    wire:click="$dispatch('activeAccount')"
+                                                                @else
+                                                                    href="#!"
+                                                                @endif
+                                                                role="button">Active cuenta</a>
+                                                            </div>
                                                     </div>
                                                 </div>
                                                 {{-- <div class="row g-md-3 g-2">
@@ -947,6 +963,23 @@
         });
     });
 
+    $wire.on('activeAccount', () => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción activará tu cuenta.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, activar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $wire.dispatch('activeAccountU');
+            }
+        });
+    });
+
+
     $wire.on('alert', (event) => {
         console.log('Event received:', event);
 
@@ -962,7 +995,57 @@
                     icon: event.type,
                     title: event.msj,
                 });
-            }
+            },
+            disableAccountCurrend: () => {
+                Swal.fire({
+                    title: 'Cuenta desactivada',
+                    text: 'Tu cuenta ha sido desactivada correctamente.',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    // auth()->logout(); // Cierra la sesión del usuario
+                    $wire.dispatch('logoutUser') // Cierra la sesión del usuario usando Livewire
+
+                });
+            },
+            disableAccountCurrendError: () => {
+                Swal.fire({
+                    title: 'Error al desactivar la cuenta',
+                    text: event.msj,
+                    icon: event.type,
+                    confirmButtonText: 'Aceptar'
+                });
+            },
+            activeAccountCurrend: () => {
+                Swal.fire({
+                    title: event.title,
+                    text: event.msj,
+                    icon: event.type,
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    // auth()->logout(); // Cierra la sesión del usuario
+                    if (event.type === 'success') {
+                        // Si el tipo es success, recarga la página
+                        $wire.$refresh(); // reloadn component
+
+                    }
+                });
+            },
+            logoutUser: () => {
+                Swal.fire({
+                    title: event.title,
+                    text: event.msj,
+                    icon: event.type,
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    // Redirige a la página de inicio o a donde sea necesario
+                    if (event.type === 'success') {
+                        // Si el tipo es success, recarga la págin
+                        location.reload(); // Recarga la página
+                        // window.location.href = '/';
+                    }
+                });
+            },
         };
         // Ejecuta el manejador correspondiente o muestra advertencia si no existe
         (handlers[event.method] || (() => {
