@@ -41,46 +41,51 @@
                                                     <h6 class="f-w-500">Detalles del producto</h6>
                                                     <p class="mb-0">{!! $item->descripcion !!}</p>
                                                 </div>
+                                                <form wire:submit.prevent="addVehicle({{ $item->id }})" id="formVehicle">
+                                                    <div class="product-qnty mt-2">
+                                                        <h6 class="f-w-500">Agregar Vehiculos</h6>
+                                                        <p>Disponibles: {{ $item->availability }}</p>
+                                                        <fieldset>
+                                                            @if ($item->availability > 0)
 
-                                                <div class="product-qnty">
-                                                    <h6 class="f-w-500">Agregar Vehiculos</h6>
-                                                    <p>Disponibles: {{ $item->availability }}</p>
-                                                    <fieldset>
-                                                        @if ($item->availability > 0)
+                                                            <div class="touchspin-wrapper">
+                                                                <button type="button" class="decrement-touchspin btn-touchspin touchspin-primary">
+                                                                    <i class="fa-solid fa-minus"> </i>
+                                                                </button>
 
-                                                        <div class="touchspin-wrapper">
-                                                            <button class="decrement-touchspin btn-touchspin touchspin-primary">
-                                                                <i class="fa-solid fa-minus"> </i>
-                                                            </button>
+                                                                <input class="input-touchscustom_touchspinpin spin-outline-primary" type="number" value="0" wire:model="qty" data-id="{{ $item->id }}" data-available="{{ $item->availability }}" readonly>
 
-                                                            <input class="input-touchscustom_touchspinpin spin-outline-primary" type="number" value="0" wire:model="qty" data-id="{{ $item->id }}" data-available="{{ $item->availability }}" readonly>
-
-                                                            <button class="increment-touchspin btn-touchspin touchspin-primary">
-                                                                <i class="fa-solid fa-plus"></i>
-                                                            </button>
-                                                        </div>
-
-                                                        @else
-                                                            <div class="alert alert-light-info" role="alert">
-                                                                <p class="txt-secondary"> {{ $item->nombre.' No esta disponible' }}  </p>
+                                                                <button type="button" class="increment-touchspin btn-touchspin touchspin-primary">
+                                                                    <i class="fa-solid fa-plus"></i>
+                                                                </button>
                                                             </div>
-                                                        @endif
-                                                    </fieldset>
 
-                                                </div>
-                                                <div wire:ignore class="product-size row" id="guestVechile{{ $item->id }}" >
+                                                            @else
+                                                                <div class="alert alert-light-info" role="alert">
+                                                                    <p class="txt-secondary"> {{ $item->nombre.' No esta disponible' }}  </p>
+                                                                </div>
+                                                            @endif
+                                                        </fieldset>
 
-                                                </div>
-                                                <div>
-                                                    <button class="btn btn-primary" type="button" {{ $item->availability <= 0?'disabled':'' }}
-                                                        wire:click.prevent="$dispatch('addVehicle',{vehicle_id: {{ $item->id }}})">
-                                                        Add to Cart
-                                                    </button>
-                                                        <a class="btn btn-primary ms-2"
-                                                        href="product-details.html">
-                                                        View Details
-                                                    </a>
-                                                </div>
+                                                    </div>
+                                                    <div class="product-size {{ $item->id !== 19 ? 'd-none':'' }} " >
+                                                        <h6 class="f-w-500">Personas por vehiculo</h6>
+                                                        <div wire:ignore class="invalid-feedback" id="error-guestVehicle"></div>
+                                                        <div wire:ignore class="row" id="guestVechile{{ $item->id }}">
+
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-primary" type="submit" {{ $item->availability <= 0?'disabled':'' }}
+                                                            >
+                                                            Add to Cart
+                                                        </button>
+                                                            <a class="btn btn-primary ms-2"
+                                                            href="product-details.html">
+                                                            View Details
+                                                        </a>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div><button class="btn-close" type="button" data-bs-dismiss="modal"
@@ -110,7 +115,6 @@
 
 @script
 <script>
-    console.log("hola");
     $(document).ready(function () {
         let inputQTY = document.getElementsByClassName('input-touchscustom_touchspinpin');
 
@@ -123,40 +127,95 @@
             let decrement = elem.parentNode.querySelectorAll('.decrement-touchspin');
 
             if (increment) {
-                increment[0].addEventListener('click', () => {
-                    if (inpData < inpAvailable) {
-                        inpData++;
-                        elem.setAttribute('value', inpData);
-                        @this.set('qty', inpData);
+            increment[0].addEventListener('click', () => {
+                if (inpData < inpAvailable) {
+                inpData++;
+                elem.setAttribute('value', inpData);
+                @this.set('qty', inpData);
 
-                        // Agregar un nuevo select para el nuevo vehículo
-                        let guest = `<div class="col-md-6 guest-item" id="guest-item-${vehicle_id}-${inpData}">
-                                <label class="form-label" for="exampleFormControlTextarea1">Vehiculo (${inpData})</label>
-                                <select class="form-select @error('role') is-invalid @enderror" required="" wire:model="guestVehicle[${inpData}]">
-                                    <option selected value>Seleccione...</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                </select>
-                                </div>`;
-                        $(`#guestVechile${vehicle_id}`).append(guest);
+                if (vehicle_id == 19) { // Solo para el vehículo con id 19
+                    // Agregar un nuevo select para el nuevo vehículo
+                    let guest = `
+                        <div class="col-md-6 guest-item" id="guest-item-${vehicle_id}-${inpData}">
+                            <label class="form-label" for="guestProd">Vehiculo (${inpData})</label>
+                            <select class="form-select @error('guestVehicle.${inpData}')  is-invalid @enderror" id="guestProd" required="" wire:model="guestVehicle.${inpData}">
+                                <option selected value>Seleccione...</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                            <div class="invalid-feedback" id="error-guestVehicle.${inpData}"></div>
+                        </div>`;
+                    $(`#guestVechile${vehicle_id}`).append(guest);
+                }
 
-                        console.log(inpData, 'increment');
-                    }
-                });
+                }
+            });
             }
             if (decrement) {
-                decrement[0].addEventListener('click', () => {
-                    if (inpData > 1) {
+            decrement[0].addEventListener('click', () => {
+                if (inpData > 1) {
+                    if (vehicle_id == 19) { // Solo para el vehículo con id 19
                         $(`#guest-item-${vehicle_id}-${inpData}`).remove();
-                        inpData--;
-                        elem.setAttribute('value', inpData);
-                        @this.set('qty', inpData);
-                        console.log(inpData, 'decrement');
+                        // Limpia el valor del modelo guestVehicle correspondiente
+                        // $wire.dispatch()
+                        console.log(inpData);
+
+                        @this.call('removeGuestVehicleItem', inpData);
                     }
-                });
+                    inpData--;
+                    elem.setAttribute('value', inpData);
+                    @this.set('qty', inpData);
+                }
+            });
             }
         });
 
+    });
+
+    // Escucha el evento 'notify' de Livewire
+    $wire.on('notify', (event) => {
+        console.log(event);
+
+        // Manejadores para cada método posible
+        const handlers = {
+            // Cuando se agrega una nota
+            addVehicle: () => {
+            if (event.type === 'success') {
+                $(`#modal-vehicle-${event.vehicle}`).modal("hide"); // Cierra el modal
+                $wire.dispatch('refreshShoppingCar');
+                $wire.$refresh(); // Refresca el componente
+            }
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            // Cuando hay errores de validación en el formulario de cliente
+            errorValidationAddVehicle: () => {
+                // Limpia errores previos
+                $("#formVehicle .form-select").removeClass("is-invalid");
+                $("#formVehicle .invalid-feedback").text("");
+                // Muestra los nuevos errores
+                Object.entries(event.errors).forEach(([key, messages]) => {
+                    console.log(key);
+
+                    $("#" + key).addClass("is-invalid");
+                    $("#formVehicle #error-" + key).text(messages[0]).css({
+                        "display": "block",
+                        "color": "var(--bs-form-invalid-color) !important",
+                    });
+                });
+            },
+
+        };
+
+        // Ejecuta el manejador correspondiente o muestra advertencia si no existe
+        (handlers[event.method] || (() => {
+            Toast.fire({
+                icon: "warning",
+                title: 'Acción no reconocida',
+            });
+        }))();
     });
 </script>
 @endscript

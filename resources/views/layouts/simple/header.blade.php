@@ -131,57 +131,8 @@
                                 </svg><span class="badge rounded-pill badge-danger">2</span></div>
                             <div class="cart-dropdown onhover-show-div">
                                 <h6 class="f-18 mb-0 dropdown-title">Cart</h6>
-                                <ul>
-                                    <li>
-                                        <div class="d-flex"><img class="img-fluid b-r-5 me-3 img-60"
-                                                src="{{ asset('assets/images/other-images/cart-img.jpg') }}" alt="">
-                                            <div class="flex-grow-1"><span>Furniture Chair for Home</span>
-                                                <div class="qty-box">
-                                                    <div class="input-group"><span class="input-group-prepend"><button
-                                                                class="btn quantity-left-minus" type="button"
-                                                                data-type="minus" data-field="">-</button></span><input
-                                                            class="form-control input-number" type="text"
-                                                            name="quantity" value="1"><span
-                                                            class="input-group-prepend"><button
-                                                                class="btn quantity-right-plus" type="button"
-                                                                data-type="plus" data-field="">+</button></span>
-                                                    </div>
-                                                </div>
-                                                <h6 class="font-primary">$12.45</h6>
-                                            </div>
-                                            <div class="close-circle"><a class="bg-danger" href="#"><i
-                                                        data-feather="x"></i></a></div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex"><img class="img-fluid b-r-5 me-3 img-60"
-                                                src="{{ asset('assets/images/other-images/cart-img1.jpg') }}" alt="">
-                                            <div class="flex-grow-1"><span>Rest Well Chair</span>
-                                                <div class="qty-box">
-                                                    <div class="input-group"><span class="input-group-prepend"><button
-                                                                class="btn quantity-left-minus" type="button"
-                                                                data-type="minus" data-field="">-</button></span><input
-                                                            class="form-control input-number" type="text"
-                                                            name="quantity" value="1"><span
-                                                            class="input-group-prepend"><button
-                                                                class="btn quantity-right-plus" type="button"
-                                                                data-type="plus" data-field="">+</button></span>
-                                                    </div>
-                                                </div>
-                                                <h6 class="font-primary">$49.00</h6>
-                                            </div>
-                                            <div class="close-circle"><a class="bg-danger" href="#"><i
-                                                        data-feather="x"></i></a></div>
-                                        </div>
-                                    </li>
-                                    <li class="total">
-                                        <h6 class="mb-0">Order Total : <span class="f-right">$1000.00</span></h6>
-                                    </li>
-                                    <li class="text-center"><a class="d-block view-cart f-w-700 btn btn-primary w-100"
-                                            href="">View Cart</a><a
-                                            class="btn btn-primary view-checkout btn btn-primary w-100 f-w-700"
-                                            href="">Checkout</a></li>
-                                </ul>
+                                <livewire:shopping-car.car />
+
                             </div>
                         </li>
                         <li class="onhover-dropdown">

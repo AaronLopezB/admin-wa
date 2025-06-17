@@ -65,7 +65,7 @@
             </div>
         </div>
         <div class="product-wrapper-grid" wire:loading.class="d-none" wire:target="availableVehicle">
-            <livewire:vehicle.vehicles :vehicles="$vehicles" :key="'vehicles-'.now()->timestamp"  />
+            <livewire:vehicle.vehicles :vehicles="$vehicles" :date="$date" :hour="$hour" :key="'vehicles-'.now()->timestamp"  />
         </div>
     </div>
 </div>
