@@ -3,6 +3,7 @@
 namespace App\Livewire\Vehicle;
 
 use Livewire\Component;
+use App\Services\CarService;
 use Livewire\Attributes\Lazy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,16 @@ class Available extends Component
     protected $listeners = ['refreshAvailableVehicle' => '$refresh'];
     public $vehicles = [];
     public $date, $hour;
+
+    public $items = [];
+
+    protected $carService;
+
+    public function boot(CarService $carService)
+    {
+        $this->carService = $carService;
+        $this->items = $this->carService->getCar();
+    }
 
     public function placeholder()
     {

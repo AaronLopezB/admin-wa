@@ -120,6 +120,8 @@
 
         Array.from(inputQTY).forEach((elem,i) => {
             let inpData = parseInt(elem.getAttribute("value"), 10);
+            console.log(inpData);
+
             let inpAvailable = parseInt(elem.getAttribute('data-available'), 10);
             let vehicle_id = elem.getAttribute('data-id');
 
@@ -180,9 +182,12 @@
         const handlers = {
             // Cuando se agrega una nota
             addVehicle: () => {
-            if (event.type === 'success') {
+            if (event.type == 'success') {
                 $(`#modal-vehicle-${event.vehicle}`).modal("hide"); // Cierra el modal
                 $wire.dispatch('refreshShoppingCar');
+                // $wire.dispatch('refreshVehicles');
+
+                // $(`#guestVechile${event.vehicle}`).html('');
                 $wire.$refresh(); // Refresca el componente
             }
                 Toast.fire({
@@ -195,6 +200,7 @@
                 // Limpia errores previos
                 $("#formVehicle .form-select").removeClass("is-invalid");
                 $("#formVehicle .invalid-feedback").text("");
+
                 // Muestra los nuevos errores
                 Object.entries(event.errors).forEach(([key, messages]) => {
                     console.log(key);

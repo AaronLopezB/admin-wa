@@ -12,4 +12,9 @@ class ShoppingCardController extends Controller
         // This method should return the view for the shopping cart
         return view('reservations.index');
     }
+
+    public function register()
+    {
+        return view('reservations.register');
+    }
 }

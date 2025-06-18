@@ -29,25 +29,37 @@
                             <h6 class="lan-1">General</h6>
                         </div>
                     </li>
-                    <li class="sidebar-list"><i class="fa-solid fa-thumbtack"></i><label
-                            class="badge badge-light-primary">13</label><a class="sidebar-link sidebar-title"
-                            href="javascript:void(0)"><svg class="stroke-icon">
+                    <li class="sidebar-list">
+                        {{-- <i class="fa-solid fa-thumbtack"></i> --}}
+                        <label class="badge badge-light-primary">13</label>
+                        <a class="sidebar-link sidebar-title link-nav" href="javascript:void(0)">
+                            <svg class="stroke-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
-                            </svg><svg class="fill-icon">
+                            </svg>
+                            <svg class="fill-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
-                            </svg><span class="lan-3">Dashboard </span></a>
-                        <ul class="sidebar-submenu">
-                            <li><a class="lan-4" href="">Default</a></li>
+                            </svg>
+                            <span class="lan-3">Dashboard </span>
+                        </a>
 
+                    </li>
+                    <li class="sidebar-list">
+                        <label class="badge badge-light-success">New</label>
+                        {{-- <i class="fa-solid fa-thumbtack"></i> --}}
+                        <a class="sidebar-link sidebar-title" href="javascript:void(0)">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use>
+                            </svg>
+                            <span>Reservar</span>
+                        </a>
+                        <ul class="sidebar-submenu">
+                            <li><a href="{{ route('reservations.index') }}">Validar Vehiculos</a></li>
+                            <li><a href="{{ route('reservations.register') }}">Registrar Orden</a></li>
                         </ul>
                     </li>
-                    <li class="sidebar-list"><label class="badge badge-light-success">New</label><i
-                            class="fa-solid fa-thumbtack"></i><a class="sidebar-link sidebar-title link-nav"
-                            href=""><svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-api') }}"></use>
-                            </svg><svg class="fill-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-api') }}"></use>
-                            </svg><span>Manage API</span></a></li>
                     <li class="sidebar-main-title">
                         <div>
                             <h6>Miscellaneous</h6>

@@ -22,6 +22,7 @@
                                 alt=""></a></div>
                     <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle"
                             data-feather="align-center"></i></div>
+                            7366ff
                 </div>
                 {{-- <div class="left-header col-xxl-5 col-xl-6 col-lg-5 col-md-4 col-sm-3 p-0">
                     <div class="notification-slider">
@@ -126,14 +127,8 @@
                                 </svg></div>
                         </li>
                         <li class="cart-nav onhover-dropdown">
-                            <div class="cart-box"><svg>
-                                    <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use>
-                                </svg><span class="badge rounded-pill badge-danger">2</span></div>
-                            <div class="cart-dropdown onhover-show-div">
-                                <h6 class="f-18 mb-0 dropdown-title">Cart</h6>
-                                <livewire:shopping-car.car />
+                            <livewire:shopping-car.car />
 
-                            </div>
                         </li>
                         <li class="onhover-dropdown">
                             <div class="notification-box"><svg>
@@ -202,7 +197,7 @@
                                 </li>
                                 <li><a href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i
-                                            data-feather="log-in"> </i><span>Log out</span></a></li>
+                                            data-feather="log-in"> </i><span>Salir</span></a></li>
                                 <form action="{{route('logout')}}" method="POST" class="d-none" id="logout-form">
                                     @csrf
                                 </form>

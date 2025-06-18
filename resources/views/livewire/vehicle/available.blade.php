@@ -25,7 +25,13 @@
                             </div>
                             <div class="col d-flex justify-content-start align-items-center m-t-40">
                                 <button type="submit" wire:click.prevent="availableVehicle" wire:loading.attr="disabled" wire:target="availableVehicle"
-                                    class="btn btn-primary f-w-500" >Validar</button></div>
+                                    class="btn btn-primary f-w-500" >Validar</button>
+                                    @if (count($items) > 0)
+
+                                    <button type="button"
+                                        class="btn border-dashed-info f-w-500 m-l-10" >Proceder al registro</button>
+                                    @endif
+                                </div>
                         </div>
                     </form>
                 </div>

@@ -39,6 +39,7 @@ class Vehicles extends Component
 
     public function addVehicle($reservation_id)
     {
+        $this->resetValidation();
         try {
             Validator::make(
                 ['qty' => $this->qty, 'guestVehicle' => $this->guestVehicle],
@@ -67,7 +68,7 @@ class Vehicles extends Component
                 ->first();
 
             $day = Carbon::parse($this->date)->locale('es')->translatedFormat('l');
-            $price = in_array($day, ['lunes', 'martes', 'miercoles', 'jueves']) ? 99.99 :  $available->precio;
+            $price = /* in_array($day, ['lunes', 'martes', 'miercoles', 'jueves']) ? 99.99 :  */ $available->precio;
             if ($this->qty > $available->disponible) {
                 throw new \Exception('Por favor, seleccione el numero de vehículos a reservar.', 1);
             }
@@ -112,6 +113,13 @@ class Vehicles extends Component
                 'is_gift' => 0
             ];
 
+            $this->carService->add($data);
+
+            $this->reset(
+                'qty',
+                'guestVehicle'
+            );
+            $this->dispatch('refreshVehicles');
             $this->dispatch('notify', msj: "Se agrego correctamente el vehiculo", type: 'success', method: 'addVehicle', vehicle: $reservation_id);
 
             // dd($this->qty, $this->guestVehicle, $this->date, $this->hour, $reservation_id, $available, 'vehicle');

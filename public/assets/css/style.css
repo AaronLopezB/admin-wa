@@ -1,3 +1,4 @@
+
 @charset "UTF-8";
 /*! -----------------------------------------------------------------------------------
 
@@ -22499,7 +22500,7 @@ btn-group .dropdown-wrapper .input-group .input-group-text {
 .basic-wizard .stepper-horizontal .step.done .step-circle {
     background-color: var(--white);
     border: 2px solid #75758a;
-    color: var(--theme-default);
+    color: #7366ff;
     z-index: 4;
     position: relative;
 }
@@ -22517,7 +22518,8 @@ btn-group .dropdown-wrapper .input-group .input-group-text {
 .basic-wizard .stepper-horizontal .step.editing .step-circle {
     background: var(--white);
     border-color: #75758a;
-    color: var(--theme-default);
+    /* color: var(--theme-default); */
+    color: #7366ff;
 }
 .basic-wizard .stepper-horizontal .step .step-title {
     margin-top: 8px;
@@ -22560,8 +22562,8 @@ btn-group .dropdown-wrapper .input-group .input-group-text {
     left: unset;
 }
 .basic-wizard .stepper-horizontal .step.done .step-bar-right {
-    background-color: var(--theme-default);
-    border-color: var(--theme-default);
+    background-color: #7366ff;
+    border-color: #7366ff;
     z-index: 3;
     width: 100%;
 }
