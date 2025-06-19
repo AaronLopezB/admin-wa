@@ -17,61 +17,57 @@
                             <div class="step-bar-right"></div>
                         </div> --}}
                         <div class="stepper-three step">
-                            <div class="step-circle"><span>3</span></div>
+                            <div class="step-circle"><span>2</span></div>
                             <div class="step-title">Payment</div>
                             <div class="step-bar-left"></div>
                             <div class="step-bar-right"></div>
                         </div>
                         <div class="stepper-four step">
-                            <div class="step-circle"><span>4</span></div>
+                            <div class="step-circle"><span>3</span></div>
                             <div class="step-title">Completed</div>
                             <div class="step-bar-left"></div>
                             <div class="step-bar-right"></div>
                         </div>
                     </div>
                     <div class="shipping-content" id="msform">
-                        <form class="stepper-one row g-3 needs-validation shipping-wizard" novalidate="">
+                        <form class="stepper-one row g-3 needs-validation shipping-wizard" wire:submit.prevent="infoCustomer">
                             <div class="row g-3 custom-input">
-                                <div class="col-sm-6"><label class="form-label" for="customName">Full
-                                        Name</label><input class="form-control" id="customName" type="text"
-                                        placeholder="Enter full name"></div>
-                                <div class="col-sm-6"><label class="form-label" for="customContact">Contact
-                                        Number</label><input class="form-control" id="customContact" type="number"
-                                        placeholder="Enter number"></div>
-                                <div class="col-sm-12"><label class="form-label" for="customEmail">Email</label><input
-                                        class="form-control" id="customEmail" type="email"
-                                        placeholder="pixelstrap@example.com"></div>
-                                <div class="col-12"> <label class="form-label" for="currentAddress1">Current Address
-                                    </label><textarea class="form-control" id="currentAddress1" rows="3"
-                                        placeholder="Enter your current address"></textarea></div>
-                                <div class="col-12"> <label class="form-label" for="otherNotes1">Other
-                                        Notes</label><textarea class="form-control" id="otherNotes1" rows="3"
-                                        placeholder="Enter your queries..."></textarea></div>
-                                <div class="col-md-4"><label class="form-label"
-                                        for="customSelectCountry">Country</label><select class="form-select"
-                                        id="customSelectCountry">
-                                        <option selected="" disabled="" value="1">Select country
-                                        </option>
-                                        <option value="1">Africa </option>
-                                        <option value="2">India</option>
-                                        <option value="3">Indonesia </option>
-                                        <option value="4">Netherlands</option>
-                                        <option value="5">U.K </option>
-                                        <option value="6">U.S</option>
-                                    </select></div>
-                                <div class="col-md-4 col-sm-6"> <label class="form-label"
-                                        for="customstate">State</label><input class="form-control" id="customstate"
-                                        type="text" placeholder="Enter state"></div>
-                                <div class="col-md-4 col-sm-6"><label class="form-label" for="customPostalCode">Postal
-                                        Code</label><input class="form-control" id="customPostalCode" type="text"
-                                        placeholder="Enter postal code"></div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="customName">Nombre</label>
+                                    <input class="form-control" id="customName" type="text" placeholder="Nombre" wire:model="name">
+                                    @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="customName">Apellidos</label>
+                                    <input class="form-control" id="customName" type="text" placeholder="Apellidos" wire:model="last_name">
+                                    @error('last_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="customContact">Telefono</label>
+                                    <input class="form-control" id="customContact"type="text" placeholder="(xxx)xxx-xxxx" wire:model="phone">
+                                    @error('phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-sm-12">
+                                    <label class="form-label" for="customEmail">Email</label>
+                                    <input class="form-control" id="customEmail" type="email" placeholder="example@example.com" wire:model="email">
+                                    @error('email') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label"
+                                        for="customSelectCountry">Como se entero</label>
+                                        <select class="form-select" id="customSelectCountry" wire:model="platform">
+                                        @options($type, 'Seleccione una opcion')
+                                    </select>
+                                    @error('platform') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                </div>
                             </div>
                             <div class="wizard-footer d-flex gap-2 justify-content-end mt-3">
-                                <button class="btn button-light-primary" id="backbtn" onclick="backStep()">
-                                    Back
-                                </button>
-                                <button class="btn btn-primary" id="nextbtn" onclick="nextStep()">
-                                    Next
+                                {{-- <button class="btn button-light-primary" id="backbtn" data-step="1" disabled>
+                                    Regresar
+                                </button> --}}
+                                <button class="btn btn-primary" id="nextbtn" type="submit">
+                                    Siguiente
                                 </button>
                             </div>
                         </form>
@@ -165,7 +161,7 @@
                                 </div>
                             </div>
                         </form> --}}
-                        <form class="stepper-three row g-3 needs-validation shipping-wizard" novalidate="">
+                        <form class="stepper-three row g-3 needs-validation shipping-wizard d-none" id="paymentOrder">
                             <div class="payment-info-wrapper">
                                 <div class="row shipping-method g-3">
                                     <div class="col-12">
@@ -250,7 +246,7 @@
                                 </div>
                             </div>
                         </form>
-                        <form class="stepper-four row g-3 needs-validation shipping-wizard" novalidate="">
+                        <form class="stepper-four row g-3 needs-validation shipping-wizard d-none" id="completRegister">
                             <div class="order-confirm"><img src="../assets/images/gif/dashboard-8/successful.gif"
                                     alt="popper">
                                 <div>
@@ -261,7 +257,14 @@
                             </div>
                         </form>
                     </div>
-
+                    {{-- <div class="wizard-footer d-flex gap-2 justify-content-end mt-3">
+                        <button class="btn button-light-primary" id="backbtn" onclick="backStep()">
+                            Back
+                        </button>
+                        <button class="btn btn-primary" id="nextbtn" onclick="nextStep()">
+                            Next
+                        </button>
+                    </div> --}}
                     {{-- modal add new address --}}
                     <div class="modal fade" id="exampleModalgetbootstrap" tabindex="-1" role="dialog"
                         aria-labelledby="exampleModalgetbootstrap" aria-hidden="true">
@@ -349,56 +352,15 @@
                 </div>
             </div>
         </div>
+
         <div class="col-xl-4">
             <div class="card">
                 <div class="card-header">
                     <h5>Order Details</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="summery-contain">
-                        <li> <img class="img-fluid" src="../assets/images/dashboard-8/shop-categories/headphone.png"
-                                alt="headphone">
-                            <h6>Lightweight Headphones<span>X 1</span></h6>
-                            <h6 class="price">$85.00</h6>
-                        </li>
-                        <li> <img class="img-fluid" src="../assets/images/dashboard-2/order/sub-product/24.png"
-                                alt="watch">
-                            <h6>Smart Watch<span>X 1</span></h6>
-                            <h6 class="price">$140.00</h6>
-                        </li>
-                        <li> <img class="img-fluid" src="../assets/images/dashboard-2/order/sub-product/14.png"
-                                alt="shoes">
-                            <h6>Men's Shoes<span>X 2</span></h6>
-                            <h6 class="price">$150.00</h6>
-                        </li>
-                        <li> <img class="img-fluid" src="../assets/images/dashboard-2/order/sub-product/16.png"
-                                alt="handbag">
-                            <h6>Leather Handbag<span>X 1</span></h6>
-                            <h6 class="price">$250.00</h6>
-                        </li>
-                    </ul>
-                    <ul class="summary-total">
-                        <li>
-                            <h6>Subtotal</h6>
-                            <h6 class="price">$625.00</h6>
-                        </li>
-                        <li>
-                            <h6>Shipping</h6>
-                            <h6 class="price">$14.00</h6>
-                        </li>
-                        <li>
-                            <h6>Tax</h6>
-                            <h6 class="price">$18.00</h6>
-                        </li>
-                        <li>
-                            <h6>Coupon Code</h6>
-                            <h6 class="price">$-30.00</h6>
-                        </li>
-                        <li class="list-total">
-                            <h6>Total </h6>
-                            <h6 class="price">$627.00</h6>
-                        </li>
-                    </ul>
+                    <livewire:reservations.items-car />
+
                 </div>
             </div>
         </div>
@@ -408,5 +370,13 @@
 <script>
     console.log("hola");
 
+    $(document).ready(function () {
+        new Cleave('#customContact',{
+            delimiters: ['', "-", "-"],
+            blocks: [0, 3, 3, 3],
+            numericOnly: true,
+            uppercase: true,
+        });
+    });
 </script>
 @endscript

@@ -136,7 +136,7 @@ class Dashboard extends Component
                 [
                     'rnombre' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
                     'rapellidos' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
-                    'rtelefono' => 'required|regex:/^\+?[0-9]{10,15}$/',
+                    'rtelefono' => 'required|regex:/^\+?[0-9]+-{10,15}$/',
                     'remail' => 'required|email'
                 ],
                 [

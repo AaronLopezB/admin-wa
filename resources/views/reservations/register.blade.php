@@ -28,7 +28,9 @@
 @endsection
 
 @push('scripts')
-<script  src="{{  asset('assets/js/form-wizard/custom-number-wizard.js')}}"  ></script>
+{{-- <script  src="{{  asset('assets/js/form-wizard/custom-number-wizard.js')}}"  ></script> --}}
 <script  src="{{  asset('assets/js/form-validation-custom.js')}}"  ></script>
 <script  src="{{  asset('assets/js/custom_seller.js')}}"  ></script>
+<script  src="{{  asset('assets/js/cleave/cleave.min.js')}}"  ></script>
+
 @endpush
