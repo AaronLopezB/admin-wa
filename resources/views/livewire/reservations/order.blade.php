@@ -2,9 +2,9 @@
     <div class="row shipping-form">
         <div class="col-xl-8">
             <div class="card checkout-cart">
-                <div class="card-body basic-wizard important-validation">
+                <div class="card-body basic-wizard important-validation" wire:ignore>
                     <div class="stepper-horizontal custom-scrollbar" id="stepper1">
-                        <div class="stepper-one stepper step editing active">
+                        <div class="stepper-one step stepper {{ $infoCustomer != true?'editing active':'done' }}" id="step-info-custom">
                             <div class="step-circle"><span>1</span></div>
                             <div class="step-title">Information</div>
                             <div class="step-bar-left"></div>
@@ -16,21 +16,21 @@
                             <div class="step-bar-left"></div>
                             <div class="step-bar-right"></div>
                         </div> --}}
-                        <div class="stepper-three step">
+                        <div class="stepper-three step {{ $infoCustomer === true?'editing active ':'' }}" id="step-payment">
                             <div class="step-circle"><span>2</span></div>
                             <div class="step-title">Payment</div>
                             <div class="step-bar-left"></div>
                             <div class="step-bar-right"></div>
                         </div>
-                        <div class="stepper-four step">
+                        <div class="stepper-four step" id="step-complete">
                             <div class="step-circle"><span>3</span></div>
                             <div class="step-title">Completed</div>
                             <div class="step-bar-left"></div>
                             <div class="step-bar-right"></div>
                         </div>
                     </div>
-                    <div class="shipping-content" id="msform">
-                        <form class="stepper-one row g-3 needs-validation shipping-wizard" wire:submit.prevent="infoCustomer">
+                    <div class="shipping-content" id="msform" wire:ignore>
+                        <form class="stepper-one row g-3 needs-validation shipping-wizard {{ $infoCustomer === true?'d-none':'' }}" id="infoCustomerf" wire:submit.prevent="infoCustomer">
                             <div class="row g-3 custom-input">
                                 <div class="col-sm-6">
                                     <label class="form-label" for="customName">Nombre</label>
@@ -38,13 +38,13 @@
                                     @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-sm-6">
-                                    <label class="form-label" for="customName">Apellidos</label>
-                                    <input class="form-control" id="customName" type="text" placeholder="Apellidos" wire:model="last_name">
+                                    <label class="form-label" for="customLastName">Apellidos</label>
+                                    <input class="form-control" id="customLastName" type="text" placeholder="Apellidos" wire:model="last_name">
                                     @error('last_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-sm-6">
-                                    <label class="form-label" for="customContact">Telefono</label>
-                                    <input class="form-control" id="customContact"type="text" placeholder="(xxx)xxx-xxxx" wire:model="phone">
+                                    <label class="form-label" for="customPhone">Telefono</label>
+                                    <input class="form-control" id="customPhone" type="text" placeholder="(xxx)xxx-xxxx" wire:model="phone">
                                     @error('phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-sm-12">
@@ -161,30 +161,31 @@
                                 </div>
                             </div>
                         </form> --}}
-                        <form class="stepper-three row g-3 needs-validation shipping-wizard d-none" id="paymentOrder">
+                        <form class="stepper-three row g-3 needs-validation shipping-wizard {{ $infoCustomer === true?'':'d-none' }}" id="paymentOrder" wire:submit.prevend="payment"  wire:ignore>
                             <div class="payment-info-wrapper">
                                 <div class="row shipping-method g-3">
+                                    @role('Admin')
                                     <div class="col-12">
                                         <div class="card-wrapper border rounded-3 light-card">
                                             <div>
                                                 <div class="form-check radio radio-primary"><input
                                                         class="form-check-input" id="shipping-choose9" type="radio"
-                                                        name="radio3" value="option1" checked=""><label
+                                                        name="radio3" value="0" wire:model="pay"><label
                                                         class="form-check-label mb-0 f-w-500"
-                                                        for="shipping-choose9">Paypal</label></div>
-                                                <p>You will be taken to the paypal website to finish
-                                                    your transaction safely</p>
+                                                        for="shipping-choose9">Registrar sin Cargo</label></div>
+                                                <p>Se generara la reservacion sin realizar un pago</p>
                                             </div>
-                                            <div> <img src="../assets/images/checkout/paypal.png" alt="paypal"></div>
+                                            {{-- <div> <img src="../assets/images/checkout/paypal.png" alt="paypal"></div> --}}
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    @endrole
+                                    <div class="col-12" >
                                         <div class="card-wrapper border rounded-3 pay-info light-card">
                                             <div>
                                                 <div>
                                                     <div class="form-check radio radio-primary"><input
                                                             class="form-check-input" id="shipping-choose8" type="radio"
-                                                            name="radio3" value="option1"><label
+                                                            name="radio3" value="1" wire:model="pay"><label
                                                             class="form-check-label mb-0 f-w-500"
                                                             for="shipping-choose8">Credit Card</label>
                                                     </div>
@@ -192,61 +193,46 @@
                                                         account. Mastercard, Visa, Discover, and Stripe
                                                         are all accepted</P>
                                                 </div>
-                                                <div> <img src="../assets/images/forms/credit-card.png" alt="card">
+                                                <div> <img src="../assets/images/forms/credit-card2.png" alt="card">
                                                 </div>
                                             </div>
                                             <div class="row g-3">
-                                                <div class="col-md-12"> <label class="form-label"
-                                                        for="selectCardHolderName">Card
-                                                        Holder</label><input class="form-control"
-                                                        id="selectCardHolderName" type="text"
-                                                        placeholder="Enter card holder name"></div>
-                                                <div class="col-12"><label class="form-label"
-                                                        for="selectCardNumber">Card Number</label><input
-                                                        class="form-control" id="selectCardNumber" type="number"
-                                                        placeholder="xxxx xxxx xxxx xxxx">
+                                                <div class="col-md-12">
+                                            <small class="form-text mt-2 text-center redText" id="cardErrors" role="alert"></small>
                                                 </div>
-                                                <div class="col-sm-6"><label class="form-label"
-                                                        for="selectExpiration">Expiration(MM/YY)</label><input
-                                                        class="form-control" id="selectExpiration" type="number"
-                                                        placeholder="xx/xx"></div>
-                                                <div class="col-sm-6"><label class="form-label"
-                                                        for="selectCvv">CVV</label><input class="form-control"
-                                                        id="selectCvv" type="number"></div>
-                                                <div class="col-12"> <label class="form-label"
-                                                        for="uploadDocumentation">Upload
-                                                        Documentation</label><input class="form-control"
-                                                        id="uploadDocumentation" type="file" aria-label="file example">
+                                                <input type="hidden" wire:model="payment_token" name="payment_token"
+                                        id="payment_method">
+                                                <div class="col-md-12">
+                                                    <label class="form-label"
+                                                        for="selectCardNumber">Numero de la tarjeta</label>
+                                                    <div id="card-number"></div>
                                                 </div>
-                                                <div class="col-12">
-                                                    <div class="form-check"><input
-                                                            class="form-check-input checkbox-primary"
-                                                            id="invalidCheck01" type="checkbox" value=""><label
-                                                            class="form-check-label" for="invalidCheck01">All the above
-                                                            information is correct</label></div>
+                                                <div class="col-sm-6">
+                                                    <label class="form-label"
+                                                        for="selectCardNumber">Expiracion</label>
+                                                    <div id="card-expiry"></div>
                                                 </div>
+                                                <div class="col-sm-6">
+                                                    <label class="form-label"
+                                                        for="selectCardNumber">CVC</label>
+                                                    <div id="card-cvc"></div>
+                                                </div>
+
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="card-wrapper border rounded-3 light-card">
-                                            <div>
-                                                <div class="form-check radio radio-primary"><input
-                                                        class="form-check-input" id="shipping-choose7" type="radio"
-                                                        name="radio3" value="option1"><label
-                                                        class="form-check-label mb-0 f-w-500"
-                                                        for="shipping-choose7">Cash On Delivery</label>
-                                                </div>
-                                                <p>After your order is delivered, make a cash payment
-                                                </p>
-                                            </div>
-                                            <div> <img src="../assets/images/forms/delivery.png" alt="delivery"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="wizard-footer d-flex gap-2 justify-content-end mt-3">
+                                <button class="btn button-light-primary" id="backbtn" data-step="1">
+                                    Regresar
+                                </button>
+                                <button class="btn btn-primary" id="nextbtnp" type="submit"  wire:loading.attr="disabled" wire:target="payment">
+                                    Generar / Pagar orden
+                                </button>
+                            </div>
                         </form>
-                        <form class="stepper-four row g-3 needs-validation shipping-wizard d-none" id="completRegister">
+                        <form class="stepper-four row g-3 needs-validation shipping-wizard d-none">
                             <div class="order-confirm"><img src="../assets/images/gif/dashboard-8/successful.gif"
                                     alt="popper">
                                 <div>
@@ -366,17 +352,153 @@
         </div>
     </div>
 </div>
+@assets
+
+<style>
+    .StripeElement {
+        display: block;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    .StripeElement--focus {
+        box-shadow: unset;
+        border-color: var(--theme-default);
+    }
+
+    .StripeElement--invalid {
+        border-color: var(--theme-default);
+    }
+
+    .StripeElement--webkit-autofill {
+        background-color: var(--theme-default) !important;
+    }
+</style>
+@endassets
 @script
 <script>
-    console.log("hola");
 
     $(document).ready(function () {
-        new Cleave('#customContact',{
+        console.log("hola");
+        new Cleave('#customPhone',{
             delimiters: ['', "-", "-"],
             blocks: [0, 3, 3, 3],
             numericOnly: true,
             uppercase: true,
         });
+
+        const stripe = Stripe("{{ config('secret.stripe.key') }}");
+            console.log(stripe);
+
+        const style = {
+            base: {
+                fontSize: "16px",
+                color: "#32325d",
+                "::placeholder": {
+                    color: "#aab7c4",
+                },
+                // textAlign: 'center',
+                width: "100%", // Asegura que el input ocupe todo el ancho
+            },
+            invalid: {
+                color: "#fa755a",
+                iconColor: "#fa755a",
+            },
+        };
+
+        const elements = stripe.elements({
+            locale: "es",
+            labels: 'floating',
+        });
+
+        // Crear elementos separados
+        const cardNumber = elements.create('cardNumber', {
+            style
+        });
+        const cardExpiry = elements.create('cardExpiry', {
+            style
+        });
+        const cardCvc = elements.create('cardCvc', {
+            style
+        });
+        // Montar los elementos en el DOM
+        cardNumber.mount('#card-number');
+        cardExpiry.mount('#card-expiry');
+        cardCvc.mount('#card-cvc');
+
+
+
+        $wire.on('processPaymentMethod', async ()=>{
+            console.log("submit");
+            $("#nextbtnp").attr('disabled', true);
+            const displayError = document.getElementById("cardErrors");
+                displayError.textContent = "";
+
+            const {
+                paymentMethod,
+                error
+            } = await stripe.createPaymentMethod({
+                type:'card',
+                card:cardNumber,
+                billing_details: {
+                        name: "{{ $this->dataCuestomer['name'] . ' ' . $this->dataCuestomer['last_name'] }}",
+                        email: "{{ $this->dataCuestomer['email'] }}",
+                }
+            });
+
+            console.log(error,paymentMethod);
+
+            if (error) {
+                displayError.textContent = error.message;
+            }else{
+                const tokeInput = document.getElementById
+            }
+
+        })
+
+        $wire.on('notify', (event) => {
+            const handlers = {
+                infoCustomer: () => {
+                    // Mostrar/ocultar secciones
+                $("#infoCustomerf").addClass('d-none');
+                $("#paymentOrder").removeClass('d-none').addClass('d-flex');
+
+                // Actualizar pasos del stepper
+                $("#step-info-custom").removeClass('editing active').addClass('done');
+                $("#step-payment").addClass('editing active');
+                    // Mostrar notificación
+                    Toast.fire({
+                        icon: event.type,
+                        title: event.msj,
+                    });
+                }
+            };
+
+            // Verificar si el método existe en los handlers
+            if (handlers[event.method]) {
+                handlers[event.method](); // Ejecutar la función correspondiente
+            } else {
+                Toast.fire({
+                    icon: "warning",
+                    title: 'Acción no reconocida: ' + event.method,
+            });
+        }
+
+
+
     });
+});
 </script>
 @endscript

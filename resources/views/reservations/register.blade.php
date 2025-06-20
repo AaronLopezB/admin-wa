@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Registrar Orden')
 @push('css')
-
+<script src="https://js.stripe.com/v3/"></script>
 @endpush
 @section('main_content')
 <div class="container-fluid">
@@ -29,8 +29,8 @@
 
 @push('scripts')
 {{-- <script  src="{{  asset('assets/js/form-wizard/custom-number-wizard.js')}}"  ></script> --}}
-<script  src="{{  asset('assets/js/form-validation-custom.js')}}"  ></script>
-<script  src="{{  asset('assets/js/custom_seller.js')}}"  ></script>
+{{-- <script  src="{{  asset('assets/js/form-validation-custom.js')}}"  ></script> --}}
+
 <script  src="{{  asset('assets/js/cleave/cleave.min.js')}}"  ></script>
 
 @endpush

@@ -31,6 +31,18 @@ class Order extends Component
 
     public $type;
 
+    public $infoCustomer;
+
+    public $pay = 1;
+    public $dataCuestomer;
+    public $payment_token;
+
+    public function boot()
+    {
+        $this->infoCustomer = session()->has('cli') ? true : false;
+        $this->dataCuestomer = session()->get('cli');
+    }
+
     public function placeholder()
     {
         return view('livewire.placeholder.load-component');
@@ -56,5 +68,17 @@ class Order extends Component
         ]);
 
         $this->dispatch('notify', msj: 'Se registro correctamente el usuario', type: 'success', method: 'infoCustomer');
+    }
+
+    public function payment()
+    {
+        if ($this->pay === "0") {
+            dd($this->pay);
+            # code...
+        }
+        // dd($this->pay);
+        if ($this->pay == "1") {
+            $this->dispatch('processPaymentMethod');
+        }
     }
 }
