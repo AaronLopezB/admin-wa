@@ -125,4 +125,26 @@ class CarService
         }
         return $car;
     }
+
+    public function addDiscountByItem($vehicle_id, $discount)
+    {
+        $car = ShoppingCar::with('carros')->where('identity', $this->identity)->where('id', $vehicle_id)->first();
+        if ($car) {
+            $qty = $car->carros->precio * $car->available;
+            $total = $qty - ($qty * $discount);
+            // dd($total);
+            $car->discount = $discount;
+            $car->total = $total;
+            $car->save();
+            return $car;
+        }
+    }
+
+    public function deleteCouponS($coupon)
+    {
+        $updated = ShoppingCar::with('code')->where('identity', $this->identity)
+            ->where('codigo_id', $coupon)
+            ->update(['codigo_id' => null]);
+        return $updated; // Devuelve el número de filas actualizadas
+    }
 }

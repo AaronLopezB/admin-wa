@@ -22,7 +22,7 @@
                                 alt=""></a></div>
                     <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle"
                             data-feather="align-center"></i></div>
-                            7366ff
+
                 </div>
                 {{-- <div class="left-header col-xxl-5 col-xl-6 col-lg-5 col-md-4 col-sm-3 p-0">
                     <div class="notification-slider">

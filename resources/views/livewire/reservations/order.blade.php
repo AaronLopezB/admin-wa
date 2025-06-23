@@ -29,28 +29,28 @@
                             <div class="step-bar-right"></div>
                         </div>
                     </div>
-                    <div class="shipping-content" id="msform" wire:ignore>
-                        <form class="stepper-one row g-3 needs-validation shipping-wizard {{ $infoCustomer === true?'d-none':'' }}" id="infoCustomerf" wire:submit.prevent="infoCustomer">
+                    <div class="shipping-content" id="msform">
+                        <form class="stepper-one row g-3 needs-validation shipping-wizard {{ $infoCustomer === true?'d-none':'' }}" id="infoCustomerf" wire:submit.prevent="formInfoCustomer">
                             <div class="row g-3 custom-input">
                                 <div class="col-sm-6">
                                     <label class="form-label" for="customName">Nombre</label>
                                     <input class="form-control" id="customName" type="text" placeholder="Nombre" wire:model="name">
-                                    @error('name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                    <div class="invalid-feedback" id="error-name"></div>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label" for="customLastName">Apellidos</label>
                                     <input class="form-control" id="customLastName" type="text" placeholder="Apellidos" wire:model="last_name">
-                                    @error('last_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                    <div class="invalid-feedback" id="error-last_name"></div>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label" for="customPhone">Telefono</label>
                                     <input class="form-control" id="customPhone" type="text" placeholder="(xxx)xxx-xxxx" wire:model="phone">
-                                    @error('phone') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                    <div class="invalid-feedback" id="error-phone"></div>
                                 </div>
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <label class="form-label" for="customEmail">Email</label>
                                     <input class="form-control" id="customEmail" type="email" placeholder="example@example.com" wire:model="email">
-                                    @error('email') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                    <div class="invalid-feedback" id="error-email"></div>
                                 </div>
 
                                 <div class="col-md-4">
@@ -59,7 +59,7 @@
                                         <select class="form-select" id="customSelectCountry" wire:model="platform">
                                         @options($type, 'Seleccione una opcion')
                                     </select>
-                                    @error('platform') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                                    <div class="invalid-feedback" id="error-platform"></div>
                                 </div>
                             </div>
                             <div class="wizard-footer d-flex gap-2 justify-content-end mt-3">
@@ -179,6 +179,48 @@
                                         </div>
                                     </div>
                                     @endrole
+                                    <div class="col-md-12 {{ $items->pluck('codigo_id')->first()?'d-none':'' }}">
+                                        <div class="card-wrapper border rounded-3 pay-info light-card">
+                                            <div class="row g-3">
+                                                <div class="col-md-12 " >
+                                                        <label class="form-label"
+                                                            for="selectCardNumber">Codigo de descuento</label>
+                                                        <div class="input-group ">
+                                                            <input class="form-control" type="text" placeholder="Cupon" wire:model="coupon">
+                                                            <button class="btn btn-outline-primary" id="button-addon2" type="submit" wire:click="addCoupon">Validar</button>
+                                                        </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 {{ !$items->pluck('codigo_id')->first()?'d-none':'' }}">
+                                        <div class="card-wrapper border rounded-3 pay-info light-card">
+                                            <div class="row g-3">
+                                                <div class="col-md-12 {{ $items->pluck('codigo_id')->first()?'d-none':'' }}" >
+                                                        <label class="form-label"
+                                                            for="selectCardNumber">Codigo de descuento</label>
+                                                        <div class="input-group ">
+                                                            <input class="form-control" type="text" placeholder="Cupon" wire:model="coupon">
+                                                            <button class="btn btn-outline-primary" id="button-addon2" type="submit" wire:click="addCoupon">Validar</button>
+                                                        </div>
+                                                </div>
+                                                <div class="col-md-12 ">
+                                                    <h6>
+                                                        Codigo usado
+                                                    </h6>
+                                                    <ul class="summery-contain m-t-10">
+                                                        <li>
+                                                            {{ strtoupper($items->pluck('code')->first()->codigo) }}
+                                                            <button class="btn border-dashed-danger btn-sm" type="button" wire:click="$dispatch('deleteCoupon',{ code:{{ $items->pluck('codigo_id')->first() }} })">
+                                                                <i class="fas fa-trash-alt" ></i>
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-12" >
                                         <div class="card-wrapper border rounded-3 pay-info light-card">
                                             <div>
@@ -441,7 +483,6 @@
 
 
         $wire.on('processPaymentMethod', async ()=>{
-            console.log("submit");
             $("#nextbtnp").attr('disabled', true);
             const displayError = document.getElementById("cardErrors");
                 displayError.textContent = "";
@@ -453,7 +494,7 @@
                 type:'card',
                 card:cardNumber,
                 billing_details: {
-                        name: "{{ $this->dataCuestomer['name'] . ' ' . $this->dataCuestomer['last_name'] }}",
+                        name: "{{ $this->dataCuestomer['name'] .' '. $this->dataCuestomer['last_name'] }}",
                         email: "{{ $this->dataCuestomer['email'] }}",
                 }
             });
@@ -463,12 +504,22 @@
             if (error) {
                 displayError.textContent = error.message;
             }else{
-                const tokeInput = document.getElementById
+                // @this.set('payment_token',paymentMethod.id);
+                $wire.dispatch('paymentMethodCreated',{
+                    paymentToken: paymentMethod.id
+                });
             }
+        });
 
-        })
 
-        $wire.on('notify', (event) => {
+    });
+
+    // $wire.on('deleteCoupon',(event)=> {
+    //     console.log(event);
+
+    // })
+
+    $wire.on('notify', (event) => {
             const handlers = {
                 infoCustomer: () => {
                     // Mostrar/ocultar secciones
@@ -483,6 +534,28 @@
                         icon: event.type,
                         title: event.msj,
                     });
+                },
+                errorValidationFormCustomer: () => {
+                    Object.entries(event.errors).forEach(([key, messages]) => {
+                        $("#" + key).addClass("is-invalid");
+                        $("#error-" + key).text(messages[0]).css({
+                            "display": "block",
+                            "color": "var(--bs-form-invalid-color) !important",
+                        });
+                    });
+                },
+                errorInfoCustomer:() =>{
+                    Toast.fire({
+                        icon: event.type,
+                        title: event.msj,
+                    });
+                },
+                applyCoupon:() => {
+                    $wire.dispatch('refreshPayment')
+                    Toast.fire({
+                        icon: event.type,
+                        title: event.msj,
+                    });
                 }
             };
 
@@ -493,12 +566,8 @@
                 Toast.fire({
                     icon: "warning",
                     title: 'Acción no reconocida: ' + event.method,
-            });
-        }
-
-
-
-    });
-});
+                });
+            }
+        });
 </script>
 @endscript
