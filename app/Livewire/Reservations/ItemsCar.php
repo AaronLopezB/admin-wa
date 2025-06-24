@@ -16,7 +16,6 @@ class ItemsCar extends Component
 
     public function placeholder()
     {
-
         return view('livewire.placeholder.load-card');
     }
 

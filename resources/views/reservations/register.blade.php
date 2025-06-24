@@ -23,7 +23,22 @@
     </div>
 </div><!-- Container-fluid starts-->
 <div class="container-fluid">
-    <livewire:reservations.order />
+    <div class="row shipping-form">
+        <div class="col-xl-8">
+            <livewire:reservations.order />
+        </div>
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <livewire:reservations.items-car />
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div><!-- Container-fluid Ends-->
 @endsection
 

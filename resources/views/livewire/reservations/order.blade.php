@@ -1,6 +1,4 @@
-<div>
-    <div class="row shipping-form">
-        <div class="col-xl-8">
+<div >
             <div class="card checkout-cart">
                 <div class="card-body basic-wizard important-validation" wire:ignore>
                     <div class="stepper-horizontal custom-scrollbar" id="stepper1">
@@ -60,6 +58,32 @@
                                         @options($type, 'Seleccione una opcion')
                                     </select>
                                     <div class="invalid-feedback" id="error-platform"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="customEmail">Es un regalo</label>
+                                    <div class="mb-3 d-flex gap-3 checkbox-checked">
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="flexRadioDefault1" type="radio" value="1" wire:model="is_gift" wire:click="$dispatch('habilityGif',{value:1})">
+                                            <label class="form-check-label mb-0" for="flexRadioDefault1">Si</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="flexRadioDefault2" type="radio" value="0" wire:model="is_gift" wire:click="$dispatch('habilityGif',{value:0})">
+                                            <label class="form-check-label mb-0" for="flexRadioDefault2">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="gift" class="row d-none">
+
+                                    <div class="col-sm-6">
+                                        <label class="form-label" for="customEmail">Nombre del beneficiario</label>
+                                        <input class="form-control" id="customEmail" type="email" placeholder="example@example.com" wire:model="beneficiary_name">
+                                        <div class="invalid-feedback" id="error-email"></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label" for="customEmail">Email del beneficiario</label>
+                                        <input class="form-control" id="customEmail" type="email" placeholder="example@example.com" wire:model="beneficiary_mail">
+                                        <div class="invalid-feedback" id="error-email"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="wizard-footer d-flex gap-2 justify-content-end mt-3">
@@ -168,7 +192,8 @@
                                     <div class="col-12">
                                         <div class="card-wrapper border rounded-3 light-card">
                                             <div>
-                                                <div class="form-check radio radio-primary"><input
+                                                <div class="form-check radio radio-primary">
+                                                    <input
                                                         class="form-check-input" id="shipping-choose9" type="radio"
                                                         name="radio3" value="0" wire:model="pay"><label
                                                         class="form-check-label mb-0 f-w-500"
@@ -179,7 +204,7 @@
                                         </div>
                                     </div>
                                     @endrole
-                                    <div class="col-md-12 {{ $items->pluck('codigo_id')->first()?'d-none':'' }}">
+                                    <div class="col-md-6 {{ $items->pluck('codigo_id')->first()?'d-none':'' }}">
                                         <div class="card-wrapper border rounded-3 pay-info light-card">
                                             <div class="row g-3">
                                                 <div class="col-md-12 " >
@@ -187,7 +212,7 @@
                                                             for="selectCardNumber">Codigo de descuento</label>
                                                         <div class="input-group ">
                                                             <input class="form-control" type="text" placeholder="Cupon" wire:model="coupon">
-                                                            <button class="btn btn-outline-primary" id="button-addon2" type="submit" wire:click="addCoupon">Validar</button>
+                                                            <button class="btn btn-outline-primary" id="button-addon2" type="button" wire:click="addCoupon">Validar</button>
                                                         </div>
                                                 </div>
 
@@ -202,7 +227,7 @@
                                                             for="selectCardNumber">Codigo de descuento</label>
                                                         <div class="input-group ">
                                                             <input class="form-control" type="text" placeholder="Cupon" wire:model="coupon">
-                                                            <button class="btn btn-outline-primary" id="button-addon2" type="submit" wire:click="addCoupon">Validar</button>
+                                                            <button class="btn btn-outline-primary" id="button-addon2" type="submit" wire:click="addCoupon" wire:target="addCoupon" wire:loading.attr="disabled">Validar</button>
                                                         </div>
                                                 </div>
                                                 <div class="col-md-12 ">
@@ -210,12 +235,15 @@
                                                         Codigo usado
                                                     </h6>
                                                     <ul class="summery-contain m-t-10">
+                                                        @if ($items->pluck('codigo_id')->first())
+
                                                         <li>
                                                             {{ strtoupper($items->pluck('code')->first()->codigo) }}
                                                             <button class="btn border-dashed-danger btn-sm" type="button" wire:click="$dispatch('deleteCoupon',{ code:{{ $items->pluck('codigo_id')->first() }} })">
                                                                 <i class="fas fa-trash-alt" ></i>
                                                             </button>
                                                         </li>
+                                                        @endif
                                                     </ul>
                                                 </div>
                                             </div>
@@ -269,7 +297,7 @@
                                 <button class="btn button-light-primary" id="backbtn" data-step="1">
                                     Regresar
                                 </button>
-                                <button class="btn btn-primary" id="nextbtnp" type="submit"  wire:loading.attr="disabled" wire:target="payment">
+                                <button class="btn btn-primary" id="nextbtnp" type="submit" wire:target="payment" wire:loading.attr="disabled" >
                                     Generar / Pagar orden
                                 </button>
                             </div>
@@ -379,20 +407,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Order Details</h5>
-                </div>
-                <div class="card-body">
-                    <livewire:reservations.items-car />
-
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 @assets
 
@@ -431,9 +445,22 @@
 @endassets
 @script
 <script>
-
     $(document).ready(function () {
         console.log("hola");
+
+        $wire.on('habilityGif',(data) => {
+            console.log('hola radio',data.value);
+            @this.is_gift = data.value;
+            if (data.value === 1) {
+
+                $("#gift").removeClass('d-none');
+            }else {
+                $("#gift").addClass('d-none');
+
+            }
+        });
+
+
         new Cleave('#customPhone',{
             delimiters: ['', "-", "-"],
             blocks: [0, 3, 3, 3],
@@ -487,6 +514,9 @@
             const displayError = document.getElementById("cardErrors");
                 displayError.textContent = "";
 
+            let name = "{{ $this->dataCuestomer['name'] .' '. $this->dataCuestomer['last_name'] }}";
+            let email = "{{ $this->dataCuestomer['email'] }}";
+
             const {
                 paymentMethod,
                 error
@@ -494,8 +524,8 @@
                 type:'card',
                 card:cardNumber,
                 billing_details: {
-                        name: "{{ $this->dataCuestomer['name'] .' '. $this->dataCuestomer['last_name'] }}",
-                        email: "{{ $this->dataCuestomer['email'] }}",
+                        name: name,
+                        email: email,
                 }
             });
 
@@ -514,60 +544,66 @@
 
     });
 
-    // $wire.on('deleteCoupon',(event)=> {
-    //     console.log(event);
-
-    // })
-
     $wire.on('notify', (event) => {
-            const handlers = {
-                infoCustomer: () => {
-                    // Mostrar/ocultar secciones
-                $("#infoCustomerf").addClass('d-none');
-                $("#paymentOrder").removeClass('d-none').addClass('d-flex');
+        const handlers = {
+            infoCustomer: () => {
+                // Mostrar/ocultar secciones
+            $("#infoCustomerf").addClass('d-none');
+            $("#paymentOrder").removeClass('d-none').addClass('d-flex');
 
-                // Actualizar pasos del stepper
-                $("#step-info-custom").removeClass('editing active').addClass('done');
-                $("#step-payment").addClass('editing active');
-                    // Mostrar notificación
-                    Toast.fire({
-                        icon: event.type,
-                        title: event.msj,
-                    });
-                },
-                errorValidationFormCustomer: () => {
-                    Object.entries(event.errors).forEach(([key, messages]) => {
-                        $("#" + key).addClass("is-invalid");
-                        $("#error-" + key).text(messages[0]).css({
-                            "display": "block",
-                            "color": "var(--bs-form-invalid-color) !important",
-                        });
-                    });
-                },
-                errorInfoCustomer:() =>{
-                    Toast.fire({
-                        icon: event.type,
-                        title: event.msj,
-                    });
-                },
-                applyCoupon:() => {
-                    $wire.dispatch('refreshPayment')
-                    Toast.fire({
-                        icon: event.type,
-                        title: event.msj,
-                    });
-                }
-            };
-
-            // Verificar si el método existe en los handlers
-            if (handlers[event.method]) {
-                handlers[event.method](); // Ejecutar la función correspondiente
-            } else {
+            // Actualizar pasos del stepper
+            $("#step-info-custom").removeClass('editing active').addClass('done');
+            $("#step-payment").addClass('editing active');
+                // Mostrar notificación
                 Toast.fire({
-                    icon: "warning",
-                    title: 'Acción no reconocida: ' + event.method,
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            errorValidationFormCustomer: () => {
+                Object.entries(event.errors).forEach(([key, messages]) => {
+                    $("#" + key).addClass("is-invalid");
+                    $("#error-" + key).text(messages[0]).css({
+                        "display": "block",
+                        "color": "var(--bs-form-invalid-color) !important",
+                    });
+                });
+            },
+            errorInfoCustomer:() =>{
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            applyCoupon:() => {
+
+                location.reload();
+
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+            },
+            deleteCoupon:() => {
+
+                location.reload();
+
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
                 });
             }
-        });
+        };
+
+        // Verificar si el método existe en los handlers
+        if (handlers[event.method]) {
+            handlers[event.method](); // Ejecutar la función correspondiente
+        } else {
+            Toast.fire({
+                icon: "warning",
+                title: 'Acción no reconocida: ' + event.method,
+            });
+        }
+    });
 </script>
 @endscript
