@@ -37,7 +37,7 @@ class TermsMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.reservations.terms',
+            view: 'emails.reservations.terms',
             with: [
                 'reservation' => $this->reservation,
             ]

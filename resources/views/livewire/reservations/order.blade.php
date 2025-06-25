@@ -63,11 +63,11 @@
                                     <label class="form-label" for="customEmail">Es un regalo</label>
                                     <div class="mb-3 d-flex gap-3 checkbox-checked">
                                         <div class="form-check">
-                                            <input class="form-check-input" id="flexRadioDefault1" type="radio" value="1" wire:model="is_gift" wire:click="$dispatch('habilityGif',{value:1})">
+                                            <input class="form-check-input" id="flexRadioDefault1" type="radio" value="true" wire:model="is_gift" wire:click="$dispatch('habilityGif',{value:1})">
                                             <label class="form-check-label mb-0" for="flexRadioDefault1">Si</label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" id="flexRadioDefault2" type="radio" value="0" wire:model="is_gift" wire:click="$dispatch('habilityGif',{value:0})">
+                                            <input class="form-check-input" id="flexRadioDefault2" type="radio" value="false" wire:model="is_gift" wire:click="$dispatch('habilityGif',{value:0})">
                                             <label class="form-check-label mb-0" for="flexRadioDefault2">No</label>
                                         </div>
                                     </div>
@@ -76,13 +76,13 @@
 
                                     <div class="col-sm-6">
                                         <label class="form-label" for="customEmail">Nombre del beneficiario</label>
-                                        <input class="form-control" id="customEmail" type="email" placeholder="example@example.com" wire:model="beneficiary_name">
-                                        <div class="invalid-feedback" id="error-email"></div>
+                                        <input class="form-control" id="customEmail" type="text" placeholder="Nombre" wire:model="beneficiary_name">
+                                        <div class="invalid-feedback" id="error-beneficiary_name"></div>
                                     </div>
                                     <div class="col-sm-6">
                                         <label class="form-label" for="customEmail">Email del beneficiario</label>
                                         <input class="form-control" id="customEmail" type="email" placeholder="example@example.com" wire:model="beneficiary_mail">
-                                        <div class="invalid-feedback" id="error-email"></div>
+                                        <div class="invalid-feedback" id="error-beneficiary_mail"></div>
                                     </div>
                                 </div>
                             </div>
@@ -545,6 +545,8 @@
     });
 
     $wire.on('notify', (event) => {
+        console.log(event);
+
         const handlers = {
             infoCustomer: () => {
                 // Mostrar/ocultar secciones
