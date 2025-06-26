@@ -31,8 +31,8 @@
                     </li>
                     <li class="sidebar-list">
                         {{-- <i class="fa-solid fa-thumbtack"></i> --}}
-                        <label class="badge badge-light-primary">13</label>
-                        <a class="sidebar-link sidebar-title link-nav" href="javascript:void(0)">
+                        {{-- <label class="badge badge-light-primary">13</label> --}}
+                        <a class="sidebar-link sidebar-title link-nav" href="{{ route('dashboard') }}">
                             <svg class="stroke-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
                             </svg>
@@ -44,7 +44,7 @@
 
                     </li>
                     <li class="sidebar-list">
-                        <label class="badge badge-light-success">New</label>
+                        {{-- <label class="badge badge-light-success">New</label> --}}
                         {{-- <i class="fa-solid fa-thumbtack"></i> --}}
                         <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                             <svg class="stroke-icon">

@@ -6,6 +6,7 @@ return [
         'base_uri' => env('STRIPE_BASE_URI'),
         'key' => env('APP_DEBUG') == true ? env('STRIPE_KEY_T') : env('STRIPE_KEY_P'),
         'secret' => env('APP_DEBUG') == true ? env('STRIPE_SECRET_T') : env('STRIPE_SECRET_P'),
+        'dv' => 'eur',
         // 'class' =>App\Services\StripeServices::class
     ],
     'mails' => [

@@ -106,7 +106,7 @@ class CarService
 
     public function removeAllItem()
     {
-        session()->forget('cli');
+        session()->forget('cli', 'paymentIntentId');
         return ShoppingCar::where('identity', $this->identity)->delete();
     }
 

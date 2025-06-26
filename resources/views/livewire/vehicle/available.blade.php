@@ -28,8 +28,8 @@
                                     class="btn btn-primary f-w-500" >Validar</button>
                                     @if (count($items) > 0)
 
-                                    <button type="button"
-                                        class="btn border-dashed-info f-w-500 m-l-10" >Proceder al registro</button>
+                                    <a href="{{ route('reservations.register') }}"
+                                        class="btn border-dashed-info f-w-500 m-l-10" >Proceder al registro</a>
                                     @endif
                                 </div>
                         </div>

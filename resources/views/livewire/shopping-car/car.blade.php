@@ -49,8 +49,10 @@
             <li class="total">
                 <h6 class="mb-0">Order Total : <span class="f-right">&euro;{{ $items->sum('total') }}</span></h6>
             </li>
-            <li class="text-center"><a class="d-block view-cart f-w-700 btn btn-primary w-100" href="">View Cart</a><a
-                    class="btn btn-primary view-checkout btn btn-primary w-100 f-w-700" href="">Checkout</a></li>
+            <li class="text-center">
+                {{-- <a class="d-block view-cart f-w-700 btn btn-primary w-100" href="">View Cart</a> --}}
+                <a class="btn btn-primary view-checkout btn btn-primary w-100 f-w-700" href="{{ route('reservations.register') }}">Proceder al registro</a>
+            </li>
         </ul>
     </div>
     @endif

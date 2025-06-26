@@ -541,12 +541,51 @@
             }
         });
 
+        $wire.on('authAprovalPayment',(event) => {
+            const handlers = {
+                    payment: () => {
+                        // Swal.fire({
+                        //     icon: data.reply,
+                        //     title: 'Excelente!...',
+                        //     text: data.msj,
+                        // });
+                        $wire.dispatch('store');
+                    },
+                    auth: () => {
+                        // Swal.fire({
+                        //     icon: data.reply,
+                        //     title: 'Excelente!...',
+                        //     text: data.msj,
+                        // });
+                        Toast.fire({
+                            icon: data.reply,
+                            title: data.msj
+                        });
+                        setTimeout(() => {
+                            athenticateUser(data.secret);
+                        }, 250);
+                    },
+                    failed: () => {
+                        Swal.fire({
+                            icon: data.reply,
+                            title: 'Error',
+                            text: data.msj,
+                        });
+                    }
+            }
+            if (handlers[event.method]) {
+                handlers[event.method](); // Ejecutar la función correspondiente
+            } else {
+                Toast.fire({
+                    icon: "warning",
+                    title: 'Acción no reconocida: ' + event.method,
+                });
+            }
+        });
 
     });
 
     $wire.on('notify', (event) => {
-        console.log(event);
-
         const handlers = {
             infoCustomer: () => {
                 // Mostrar/ocultar secciones
@@ -593,6 +632,24 @@
                 Toast.fire({
                     icon: event.type,
                     title: event.msj,
+                });
+            },
+            registerOrder:()=> {
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+                if (event.type == 'success') {
+                    setTimeout(() => {
+                        window.location.href = "{{ route('dashboard') }}"
+                    }, 100);
+                }
+            },
+            errorProcessPayment: () => {
+                Swal.fire({
+                    icon: event.type,
+                    title: 'Upps...',
+                    text: event.msj,
                 });
             }
         };
