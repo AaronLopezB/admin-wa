@@ -78,12 +78,12 @@
                                                     <div>
                                                         <button class="btn btn-primary" type="submit" {{ $item->availability <= 0?'disabled':'' }}
                                                             >
-                                                            Add to Cart
+                                                            Agregar al carrito
                                                         </button>
-                                                            <a class="btn btn-primary ms-2"
+                                                            {{-- <a class="btn btn-primary ms-2"
                                                             href="product-details.html">
                                                             View Details
-                                                        </a>
+                                                        </a> --}}
                                                     </div>
                                                 </form>
                                             </div>
@@ -101,6 +101,7 @@
                             <h4>{{ $item->nombre }}</h4>
                         </a>
                         <p>{{ Str::limit($item->descripcion,30) }}</p>
+                        <p>Disponibles: <strong>{{ $item->availability }}</strong></p>
                         <div class="product-price">&euro;{{ number_format($item->precio,2) }} {{-- <del>$50.00 </del> --}}</div>
                     </div>
                 </div>
@@ -185,7 +186,7 @@
             if (event.type == 'success') {
                 $(`#modal-vehicle-${event.vehicle}`).modal("hide"); // Cierra el modal
                 $wire.dispatch('refreshShoppingCar');
-                // $wire.dispatch('refreshVehicles');
+                $wire.dispatch('refreshAvailableVehicle');
 
                 // $(`#guestVechile${event.vehicle}`).html('');
                 $wire.$refresh(); // Refresca el componente

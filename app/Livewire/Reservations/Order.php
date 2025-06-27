@@ -24,6 +24,7 @@ use App\Mail\Reservation\TermsMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Reservation\ReservationMail;
+use GuzzleHttp\Exception\ClientException;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Mail\Reservation\GiftReservationMail;
 use Intervention\Image\Laravel\Facades\Image;
@@ -94,7 +95,7 @@ class Order extends Component
             $this->validate([
                 'name' => 'required|string',
                 'last_name' => 'required|string',
-                'phone' => 'required|regex:/^\+?[0-9]{9,15}$/',
+                'phone' => 'required|regex:/^\d{3}-\d{3}-\d{3,4}$/',
                 'email' => 'required|email',
                 'platform' => 'required|not_in:0',
                 'beneficiary_name' => $this->is_gift ? 'required|string' : 'nullable',
@@ -205,6 +206,33 @@ class Order extends Component
         } catch (\Throwable $th) {
             Log::error("error al procesar el pago $th");
             $this->dispatch('notify', msj: 'Se produjo un error al procesar su pago', method: 'errorProcessPayment', type: 'error');
+        }
+    }
+
+    #[On('aprovPayment')]
+    public function handleAprovPayment($paymentIntent)
+    {
+        try {
+            $paymentStripe = resolve(StripeServices::class);
+            $aprov = $paymentStripe->handleApproval();
+            if ($aprov['response'] === 'auth' || $aprov['response'] === 'payment') {
+                $this->dispatch('store');
+            } else {
+                // Registrar respuesta inesperada para depuración
+                Log::warning('Respuesta inesperada de Stripe', ['response' => $aprov]);
+                $this->dispatch('notify', msj: 'No se pudo concretar correctamente el pago', reply: 'error', method: 'errorProcessPayment');
+            }
+        } catch (ClientException $e) {
+            $errorBody = json_decode($e->getResponse()->getBody()->getContents(), true);
+
+            $error = [
+                'code' => $errorBody['error']['code'] ?? 'unknown',
+                'decline_reason' => $errorBody['error']['decline_code'] ?? 'unknown',
+                'message' => $errorBody['error']['message'] ?? 'La tarjeta fue declinada',
+            ];
+
+            Log::error('Error en aprobación de pago: ' . $e->getMessage());
+            $this->dispatch('notify', msj: $error['message'], reply: 'error', method: 'noProcessPayment');
         }
     }
 

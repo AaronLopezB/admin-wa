@@ -3,14 +3,21 @@
         <div class="card">
 
             <div class="card-header">
-                <h5>Reservaciones</h5>
-                <div class="card-header-right">
-                    <div class="input-group">
-                        <input class="form-control" type="text" placeholder="Buscar...."
-                            aria-label="Recipient's username" aria-describedby="button-addon2"  wire:model="search">
-                        <button class="btn btn-outline-primary" id="button-addon2" type="button" wire:click="$refresh">
-                            Buscar <i wire:loading class="fa-solid fa-circle-notch fa-spin" style="color: var(--theme-default)"></i>
-                        </button>
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <h5>Reservaciones</h5>
+                    </div>
+                    <div class="col-md-4">
+
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Buscar...."
+                                aria-label="Recipient's username" aria-describedby="button-addon2"  wire:model="search">
+                            <button class="btn btn-outline-primary" id="button-addon2" type="button" wire:click="$refresh">
+                                Buscar <i wire:loading class="fa-solid fa-circle-notch fa-spin" style="color: var(--theme-default)"></i>
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -83,7 +90,7 @@
                                         >Enviar correo de reembolso</button>
                                         <button class="dropdown-item"
                                             {{ $item->estatus === 1 || $item->estatus === 8 ? '':'disabled' }}
-                                            wire:click="$dispatch('resendTerms',{reservation_id:{{ $item->id }}})">Reenviar términos</button>
+                                            wire:click="$didbovflfpelg8ibspatch('resendTerms',{reservation_id:{{ $item->id }}})">Reenviar términos</button>
                                         <button class="dropdown-item"
                                             wire:click="$dispatch('show-modal-add-notes',{reservation_id:{{ $item->id }}})">Nota de reserva</button>
                                         <button class="dropdown-item"
@@ -107,7 +114,7 @@
 
                     </tbody>
                 </table>
-                <div class="p-15">
+                <div class="d-flex p-15">
                     {{ $reservations->links('vendor.livewire.customer') }}
                 </div>
             </div>

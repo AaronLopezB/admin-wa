@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label" for="customPhone">Telefono</label>
-                                    <input class="form-control" id="customPhone" type="text" placeholder="(xxx)xxx-xxxx" wire:model="phone">
+                                    <input class="form-control" id="customPhone" type="text" placeholder="xxx-xxx-xxxx" wire:model="phone">
                                     <div class="invalid-feedback" id="error-phone"></div>
                                 </div>
                                 <div class="col-sm-6">
@@ -463,7 +463,7 @@
 
         new Cleave('#customPhone',{
             delimiters: ['', "-", "-"],
-            blocks: [0, 3, 3, 3],
+            blocks: [0, 3, 3, 4],
             numericOnly: true,
             uppercase: true,
         });
@@ -558,18 +558,18 @@
                         //     text: data.msj,
                         // });
                         Toast.fire({
-                            icon: data.reply,
-                            title: data.msj
+                            icon: event.reply,
+                            title: event.msj
                         });
                         setTimeout(() => {
-                            athenticateUser(data.secret);
+                            athenticateUser(event.secret);
                         }, 250);
                     },
                     failed: () => {
                         Swal.fire({
-                            icon: data.reply,
+                            icon: event.reply,
                             title: 'Error',
-                            text: data.msj,
+                            text: event.msj,
                         });
                     }
             }
@@ -582,6 +582,24 @@
                 });
             }
         });
+
+        async function athenticateUser(secretCli) {
+            const {
+                error: errorAction,
+                paymentIntent
+            } = await stripe.handleCardAction(secretCli);
+            if (errorAction) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upps...',
+                    text: 'No se pudo concretar su compra por favor comuniquese con su banco',
+                });
+            }else {
+                $wire.dispatch('aprovPayment', {
+                            paymentIntent: paymentIntent.id
+                        });
+                }
+        }
 
     });
 
@@ -648,6 +666,20 @@
             errorProcessPayment: () => {
                 Swal.fire({
                     icon: event.type,
+                    title: 'Upps...',
+                    text: event.msj,
+                });
+            },
+            noProcessPayment: () => {
+                Swal.fire({
+                    icon: event.reply,
+                    title: 'Lo lamento',
+                    text: event.msj,
+                });
+            },
+            errorProcessPayment: () => {
+                Swal.fire({
+                    icon: event.reply,
                     title: 'Upps...',
                     text: event.msj,
                 });
