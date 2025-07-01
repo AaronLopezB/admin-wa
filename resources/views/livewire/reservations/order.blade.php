@@ -322,7 +322,7 @@
                         </button>
                     </div> --}}
                     {{-- modal add new address --}}
-                    <div class="modal fade" id="exampleModalgetbootstrap" tabindex="-1" role="dialog"
+                    {{-- <div class="modal fade" id="exampleModalgetbootstrap" tabindex="-1" role="dialog"
                         aria-labelledby="exampleModalgetbootstrap" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content custom-input">
@@ -404,7 +404,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 </div>
@@ -461,12 +461,12 @@
         });
 
 
-        new Cleave('#customPhone',{
-            delimiters: ['', "-", "-"],
-            blocks: [0, 3, 3, 4],
-            numericOnly: true,
-            uppercase: true,
-        });
+        // new Cleave('#customPhone',{
+        //     delimiters: ['', "-", "-"],
+        //     blocks: [0, 3, 3, 4],
+        //     numericOnly: true,
+        //     uppercase: true,
+        // });
 
         const stripe = Stripe("{{ config('secret.stripe.key') }}");
             console.log(stripe);

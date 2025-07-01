@@ -74,95 +74,9 @@
             </div>
         </div>
         <div class="col-xxl-7 col-lg-8 ord-xl-6 ord-md-6 box-ord-6 box-col-8e">
-            <div class="row">
-                <div class="col-xl-4">
-                    <div class="card compare-order">
-                        <div class="card-header card-no-border">
-                            <div class="header-top">
-                                <div class="compare-icon shadow-primary"><i data-feather="dollar-sign"></i></div>
-                                <div class="dropdown icon-dropdown"><button class="btn dropdown-toggle"
-                                        id="dealDropdown1" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false"><i class="icon-more-alt"></i></button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1">
-                                        <a class="dropdown-item" href="#">Ver Reservaciones</a>
-                                        <a class="dropdown-item"href="#">Descargar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body pt-0"> <span class="f-w-500 c-o-light">Ventas de Hoy</span>
-                            <h4 class="mb-2"> $<span class="counter"
-                                    data-target="{{ $grafic['day']['total'] }}">0</span></h4>
-                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="58"
-                                aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar bg-primary" style="width: 58%"></div>
-                            </div><span class="user-growth f-12 f-w-500">
-                                {{-- <i class="icon-arrow-down txt-danger"></i> --}}
-                                <span class="txt-danger">{{ $grafic['day']['count'] }}</span></span><span
-                                class="user-text">last
-                                month</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4">
-                    <div class="card compare-order">
-                        <div class="card-header card-no-border">
-                            <div class="header-top">
-                                <div class="compare-icon shadow-primary"><i data-feather="dollar-sign"></i></div>
-                                <div class="dropdown icon-dropdown"><button class="btn dropdown-toggle"
-                                        id="dealDropdown1" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false"><i class="icon-more-alt"></i></button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1">
-                                        <a class="dropdown-item" href="#">Ver Reservaciones</a>
-                                        <a class="dropdown-item"href="#">Descargar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body pt-0"> <span class="f-w-500 c-o-light">Ventas de ayer</span>
-                            <h4 class="mb-2"> $<span class="counter"
-                                    data-target="{{ $grafic['yesterday']['total'] }}">0</span></h4>
-                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="58"
-                                aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar bg-primary" style="width: 58%"></div>
-                            </div><span class="user-growth f-12 f-w-500">
-                                {{-- <i class="icon-arrow-down txt-danger"></i> --}}
-                                <span class="txt-danger">{{ $grafic['yesterday']['count'] }}</span></span><span
-                                class="user-text">ventas</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-4">
-                    <div class="card compare-order">
-                        <div class="card-header card-no-border">
-                            <div class="header-top">
-                                <div class="compare-icon shadow-primary"><i data-feather="dollar-sign"></i></div>
-                                <div class="dropdown icon-dropdown">
-                                    <button class="btn dropdown-toggle" id="dealDropdown1" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false"><i
-                                            class="icon-more-alt"></i></button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dealDropdown1">
-                                        <a class="dropdown-item" href="#">Ver Reservaciones</a>
-                                        <a class="dropdown-item"href="#">Descargar</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body pt-0"> <span class="f-w-500 c-o-light">Ventas del mes</span>
-                            <h4 class="mb-2"> $<span class="counter"
-                                    data-target="{{ $grafic['week']['total'] }}">0</span></h4>
-                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="58"
-                                aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar bg-primary" style="width: 58%"></div>
-                            </div><span class="user-growth f-12 f-w-500">
-                                {{-- <i class="icon-arrow-down txt-danger"></i> --}}
-                                <span class="txt-danger">{{ $grafic['week']['count'] }}</span>
-                            </span><span class="user-text">ventas</span>
-                        </div>
-                    </div>
-                </div>
 
-            </div>
+                <livewire:dash-board.counter>
+
         </div>
 
         <livewire:dash-board.dashboard />
@@ -207,11 +121,11 @@
     <script  src="{{ asset('assets/js/datatable/datatables/dataTables.select.js') }}"   ></script>
     <script  src="{{ asset('assets/js/datatable/datatables/select.bootstrap5.js') }}"  ></script>
     <script  src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"   ></script> --}}
-    <script  src="{{ asset('assets/js/typeahead/handlebars.js') }}"   ></script>
+    {{-- <script  src="{{ asset('assets/js/typeahead/handlebars.js') }}"   ></script>
     <script  src="{{ asset('assets/js/typeahead/typeahead.bundle.js') }}"   ></script>
     <script  src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"  ></script>
     <script  src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"   ></script>
-    <script  src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"   ></script>
+    <script  src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"   ></script> --}}
     <script  src="{{  asset('assets/js/flat-pickr/flatpickr.js')}}"  ></script>
 
     {{-- <script  src="{{  asset('assets/js/flat-pickr/custom-flatpickr.js')}}"  ></script> --}}

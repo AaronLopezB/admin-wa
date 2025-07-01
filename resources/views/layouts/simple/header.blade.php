@@ -42,7 +42,7 @@
                         <li class="language-nav">
                             <div class="translate_wrapper">
                                 <div class="current_lang">
-                                    <div class="lang"><i class="flag-icon flag-icon-us"></i><span class="lang-txt">EN
+                                    <div class="lang"><i class="flag-icon flag-icon-es"></i><span class="lang-txt">ES
                                         </span></div>
                                 </div>
                                 <div class="more_lang">
@@ -185,16 +185,16 @@
                                 </div>
                             </div>
                             <ul class="profile-dropdown onhover-show-div">
-                                <li><a href=""><i
-                                            data-feather="user"></i><span>My Profile </span></a></li>
+                                <li><a href="{{ route('profile.edit') }}"><i
+                                            data-feather="user"></i><span>Mi perfil </span></a></li>
                                 {{-- <li><a href=""><i
                                             data-feather="mail"></i><span>Inbox</span></a></li>
                                 <li><a href=""><i
                                             data-feather="file-text"></i><span>Taskboard</span></a>
                                 </li> --}}
-                                <li><a href=""><i
+                                {{-- <li><a href=""><i
                                             data-feather="settings"></i><span>Settings</span></a>
-                                </li>
+                                </li> --}}
                                 <li><a href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i
                                             data-feather="log-in"> </i><span>Salir</span></a></li>

@@ -95,7 +95,8 @@ class Order extends Component
             $this->validate([
                 'name' => 'required|string',
                 'last_name' => 'required|string',
-                'phone' => 'required|regex:/^\d{3}-\d{3}-\d{3,4}$/',
+                // 'phone' => 'required|regex:/^\d{3}-\d{3}-\d{3,4}$/',
+                'phone' => 'required|numeric|min:9|max:10',
                 'email' => 'required|email',
                 'platform' => 'required|not_in:0',
                 'beneficiary_name' => $this->is_gift ? 'required|string' : 'nullable',
