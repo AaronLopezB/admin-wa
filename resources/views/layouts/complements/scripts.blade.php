@@ -39,6 +39,105 @@
 
  </script>
 
- @stack('scripts')
+<script>
+    $(document).ready(function () {
+        $(".header-search").click(function () {
+            $(".search-full").addClass("open");
+        });
+        $(".close-search").click(function () {
+            $(".search-full").removeClass("open");
+            $("body").removeClass("offcanvas");
+        });
+        $(".mobile-toggle").click(function () {
+            $(".nav-menus").toggleClass("open");
+        });
+        $(".mobile-toggle-left").click(function () {
+            $(".left-header").toggleClass("open");
+        });
+        $(".bookmark-search").click(function () {
+            $(".form-control-search").toggleClass("open");
+        });
+        $(".filter-toggle").click(function () {
+            $(".product-sidebar").toggleClass("open");
+        });
+        $(".toggle-data").click(function () {
+            $(".product-wrapper").toggleClass("sidebaron");
+        });
+        $(".form-control-search input").keyup(function (e) {
+            if (e.target.value) {
+            $(".page-wrapper").addClass("offcanvas-bookmark");
+            } else {
+            $(".page-wrapper").removeClass("offcanvas-bookmark");
+            }
+        });
+        // $("#searchForm").keypress(function (e) {
+        //     e.preventDefault();
+        //     console.log(e.target.value);
+        //     if (e.keyCode === 13) {
+
+        //         if (e.target.value) {
+        //         $("body").addClass("offcanvas");
+        //         } else {
+        //         $("body").removeClass("offcanvas");
+        //         }
+        //     }
+        // });
+        $("#searchForm").on('keydown', function (e) {
+            if (e.key == 'Enter') {
+
+                e.preventDefault();
+                const input = $("input[name='search']").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('search') }}",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {search:input},
+                    // dataType: "json",
+                    beforeSend:function() {
+                        $('.Typeahead-spinner').show();
+                        $("#closeSerch").hide();
+                        $("body").addClass("offcanvas");
+                    },
+                    success: function (response) {
+                        $(".Typeahead-menu").show();
+                        let items = '';
+                        if (response.length > 0) {
+                            console.log(response);
+                        }
+                        else {
+                            items += `
+                                <li>No se encontraron resultados</li>
+                            `;
+                        }
+                        $("#data-search").html(items);
+                    },
+                    complete: function () {
+                        $('.Typeahead-spinner').hide();
+                        $("#closeSerch").show();
+                    }
+                });
+                console.log('hola',input);
+            }
+
+        });
+
+        // $("body").keydown(function (e) {
+        //     if (e.keyCode == 27) {
+        //     $(".search-full input").val("");
+        //     $(".form-control-search input").val("");
+        //     $(".page-wrapper").removeClass("offcanvas-bookmark");
+        //     $(".search-full").removeClass("open");
+        //     $(".search-form .form-control-search").removeClass("open");
+        //     $("body").removeClass("offcanvas");
+        //     }
+        // });
+    });
+
+</script>
+
+@stack('scripts')
 
 @livewireScripts

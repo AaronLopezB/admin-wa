@@ -29281,8 +29281,8 @@ input[type="number"] {
 
 .Typeahead-spinner {
     position: absolute;
-    top: 14px;
-    right: 18px;
+    top: 34px;
+    right: 34px;
     display: none;
     color: #c5c5c5;
 }

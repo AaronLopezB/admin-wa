@@ -35,6 +35,5 @@ class ItemsCar extends Component
     {
         $addDiscount = $this->carService->addDiscountByItem($vehicle_id, $discount);
         $this->dispatch('refreshItemPayment');
-        // dd($addDiscount, 'discount v');
     }
 }

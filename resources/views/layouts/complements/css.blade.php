@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/vendors/flatpickr/flatpickr.min.css')}}">
     <!-- Plugins css Ends-->
     @stack('css')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
     <!-- App css-->

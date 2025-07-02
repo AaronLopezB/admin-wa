@@ -5,7 +5,9 @@ namespace App\Livewire\DashBoard;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use App\Models\Reservations;
+use Maatwebsite\Excel\Facades\Excel;
 use Livewire\Attributes\Lazy;
+use App\Exports\ResertvationsExport;
 
 #[Lazy]
 class Counter extends Component
@@ -76,5 +78,45 @@ class Counter extends Component
             ->get();
         $this->dispatch('showResNow', data: $data);
         // dd('sales now', $data);
+    }
+
+    #[On('showSalesYesterday')]
+    public function yesterday()
+    {
+        $data = Reservations::with('carros')
+            ->whereRaw("DATE(created) = '" . now()->subDay()->format('Y-m-d') . "'")
+            ->orderBy('id', 'DESC')
+            // ->paginate(10, pageName: 'pageReservations');
+            ->get();
+        $this->dispatch('showResYesterday', data: $data);
+    }
+
+    #[On('showSalesWeek')]
+    public function week()
+    {
+        $data = Reservations::with('carros')
+            ->whereBetween("created", [
+                now()->startOfWeek()->format('Y-m-d'),
+                now()->endOfWeek()->format('Y-m-d')
+            ])
+            ->orderBy('id', 'DESC')
+            // ->paginate(10, pageName: 'pageReservations');
+            ->get();
+        $this->dispatch('showResWeek', data: $data);
+    }
+
+    public function download($time)
+    {
+
+        // return response()->streamDownload(function () use ($time) {
+        //     $path = storage_path('app/excel');
+        //     $now = now()->format('Ymd_His');
+
+        //     (new ResertvationsExport($time))->store("reservations-{$time}-{$now}.xlsx", 'public');
+        // }, "reservations-{$time}.xlsx");
+
+        $now = now()->format('Ymd_His');
+        $fileName = "reservations-{$time}-{$now}.xlsx";
+        return Excel::download(new ResertvationsExport($time), $fileName);
     }
 }

@@ -1,17 +1,24 @@
         <!-- Page Header Start-->
         <div class="page-header">
             <div class="header-wrapper row m-0">
-                <form class="form-inline search-full col" action="#" method="get">
+                <form class="form-inline search-full col" id="searchForm">
                     <div class="form-group w-100">
                         <div class="Typeahead Typeahead--twitterUsers">
-                            <div class="u-posRelative"><input
+                            <div class="u-posRelative">
+                                <input
                                     class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
-                                    placeholder="Search Anything Here..." name="q" title="" autofocus>
-                                <div class="spinner-border Typeahead-spinner" role="status"><span
-                                        class="sr-only">Loading...</span></div><i class="close-search"
-                                    data-feather="x"></i>
+                                    placeholder="Precione enter para poder realizar la busqueda" name="search" title="" autofocus>
+                                <div class="spinner-border Typeahead-spinner" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+
+                                <i class="close-search" data-feather="x" id="closeSerch"></i>
                             </div>
-                            <div class="Typeahead-menu"></div>
+                            <div class="Typeahead-menu">
+                                <ul id="data-search">
+
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -67,9 +74,13 @@
                         {{-- <li class="fullscreen-body"> <span><svg id="maximize-screen">
                                     <use href="{{ asset('assets/svg/icon-sprite.svg#full-screen') }}"></use>
                                 </svg></span></li> --}}
-                        <li> <span class="header-search"><svg>
+                        <li>
+                            <span class="header-search">
+                                <svg>
                                     <use href="{{ asset('assets/svg/icon-sprite.svg#search') }}"></use>
-                                </svg></span></li>
+                                </svg>
+                            </span>
+                        </li>
                         {{-- <li class="onhover-dropdown"><svg>
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#star') }}"></use>
                             </svg>

@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth', 'user_active')->group(function () {
     Route::get('/dashboard', [DashBoardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
+    Route::post('/search', [DashBoardController::class, 'search'])->name('search');
+
     Route::get('/valid/product', [ShoppingCardController::class, 'index'])->name('reservations.index');
     Route::get('/register/order', [ShoppingCardController::class, 'register'])->name('reservations.register');
 
