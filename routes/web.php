@@ -14,6 +14,7 @@ Route::middleware('auth', 'user_active')->group(function () {
     Route::get('/dashboard', [DashBoardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::post('/search', [DashBoardController::class, 'search'])->name('search');
+    Route::get('/show/details/search/{id}/{model}', [DashBoardController::class, 'details'])->name('detail.serch');
 
     Route::get('/valid/product', [ShoppingCardController::class, 'index'])->name('reservations.index');
     Route::get('/register/order', [ShoppingCardController::class, 'register'])->name('reservations.register');

@@ -35,7 +35,7 @@
                             <div class="greeting-user">
                                 <h2 class="f-w-600">Bienvenido
                                     {{ \Illuminate\Support\Str::title(auth()->user()->name ?? '') }}!</h2>
-                                <p>Que tenga un buen día</p>
+                                <p class="saludo-dinamico">Que tenga un buen día</p>
                                 <div class="whatsnew-btn"><a class="btn btn-outline-white" href="{{ route('profile.edit') }}" target="_blank">Ver
                                         Perfil</a></div>
                             </div>
@@ -108,6 +108,33 @@
         } // add zero in front of numbers < 10
         return i;
     }
+
+    function obtenerSaludoCompleto() {
+        let hora = new Date().getHours();
+        let saludo = "";
+
+        if (hora >= 5 && hora < 12) {
+            saludo = "Buenos días";
+        } else if (hora >= 12 && hora < 14) {
+            saludo = "Buen mediodía";
+        } else if (hora >= 14 && hora < 19) {
+            saludo = "Buenas tardes";
+        } else if (hora >= 19 && hora < 24) {
+            saludo = "Buenas noches";
+        } else {
+            saludo = "Buenas madrugadas";
+        }
+
+        return saludo;
+    }
+
+    function actualizarMensaje() {
+        let saludo = obtenerSaludoCompleto();
+        $('.saludo-dinamico').html('<strong>' + saludo + '</strong>, que tengas un excelente día.');
+    }
+
+    actualizarMensaje();
+    // setInterval(actualizarMensaje, 60000);
 </script>
 
     <script  src="{{ asset('assets/js/clock.js') }}" ></script>

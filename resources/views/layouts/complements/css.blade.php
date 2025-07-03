@@ -25,4 +25,40 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css')}}">
+    <style>
+        .freeze-ui4 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, .8);
+        }
+        .freeze-ui4:before {
+            content: attr(data-text);
+            display: block;
+            max-width: 125px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #343a40;
+            text-align: center;
+        }
+        .freeze-ui4:after {
+            content: '';
+            display: block;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border-width: 2px;
+            border-style: solid;
+            border-color: transparent var(--recent-dashed-border) var(--recent-dashed-border) var(--recent-dashed-border);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            animation: load .85s infinite linear;
+        }
+    </style>
     @livewireStyles

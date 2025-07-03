@@ -24,6 +24,9 @@
  <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
  <script  src="{{ asset('assets/js/notify/bootstrap-notify.min.js') }}"   ></script>
  <script>
+    const uri = '{!! asset('') !!}';
+ </script>
+ <script>
 
     const Toast = Swal.mixin({
       toast: true,
@@ -70,23 +73,16 @@
             $(".page-wrapper").removeClass("offcanvas-bookmark");
             }
         });
-        // $("#searchForm").keypress(function (e) {
-        //     e.preventDefault();
-        //     console.log(e.target.value);
-        //     if (e.keyCode === 13) {
 
-        //         if (e.target.value) {
-        //         $("body").addClass("offcanvas");
-        //         } else {
-        //         $("body").removeClass("offcanvas");
-        //         }
-        //     }
-        // });
+        // Maneja el evento 'keydown' en el formulario de búsqueda
         $("#searchForm").on('keydown', function (e) {
-            if (e.key == 'Enter') {
-
+            // Solo ejecuta la búsqueda si se presiona Enter
+            if (e.key === 'Enter') {
                 e.preventDefault();
-                const input = $("input[name='search']").val();
+                const input = $("input[name='search']").val().trim();
+
+                // Evita enviar la petición si el campo está vacío
+                if (!input) return;
 
                 $.ajax({
                     type: "POST",
@@ -94,9 +90,8 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    data: {search:input},
-                    // dataType: "json",
-                    beforeSend:function() {
+                    data: { search: input },
+                    beforeSend: function () {
                         $('.Typeahead-spinner').show();
                         $("#closeSerch").hide();
                         $("body").addClass("offcanvas");
@@ -104,13 +99,30 @@
                     success: function (response) {
                         $(".Typeahead-menu").show();
                         let items = '';
-                        if (response.length > 0) {
-                            console.log(response);
-                        }
-                        else {
-                            items += `
-                                <li>No se encontraron resultados</li>
-                            `;
+
+                        // Verifica si hay resultados
+                        if (Array.isArray(response.data) && response.data.length > 0) {
+                            response.data.forEach(element => {
+                                let button = `<button class="btn btn-pill border-dashed-primary btn-sm" data-id="${element.id}" data-model="${response.model}" id="showDetailsSearch">Ver</button>`;
+                                switch (response.model) {
+                                    case 'user':
+                                        items += `<li><strong>#${element.id}</strong> ${element.name} - ${element.email} ${button}</li>`;
+                                        break;
+                                    case 'reservation':
+                                        items += `<li><strong>#${element.id}</strong> ${element.nombre} ${element.apellidos} - ${element.email} ${button}</li>`;
+                                        break;
+                                    case 'product':
+                                        items += `<li><strong>#${element.id}</strong> ${element.nombre} - (${element.identidicador}) locacion ${element.location} ${button}</li>`;
+                                        break;
+                                    case 'code':
+                                        items += `<li><strong>#${element.id}</strong> ${element.codigo} - (${element.descuento}%) ${button}</li>`;
+                                        break;
+                                    default:
+                                        items += `<li><strong>#${element.id}</strong> ${element.nombre ?? ''} ${element.apellidos ?? ''} - ${element.email ?? ''} ${button}</li>`;
+                                }
+                            });
+                        } else {
+                            items = `<li>No se encontraron resultados</li>`;
                         }
                         $("#data-search").html(items);
                     },
@@ -119,8 +131,31 @@
                         $("#closeSerch").show();
                     }
                 });
-                console.log('hola',input);
             }
+        });
+
+        $(document).on('click','#showDetailsSearch', function (e) {
+            e.preventDefault();
+            let id = $(this).data('id');
+            let model = $(this).data('model');
+            console.log(id,model,'busqueda');
+
+            $.ajax({
+                type: "GET",
+                url: `${uri}show/details/search/${id}/${model}`,
+                beforeSend:function() {
+                    console.log('espere');
+                    $("#preloadSearch").removeClass('d-none');
+
+                },
+                success: function (response) {
+                    console.log(response);
+                    $("#modal-lg").modal('show');
+                },
+                complete: function () {
+                    $("#preloadSearch").addClass('d-none');
+                }
+            });
 
         });
 

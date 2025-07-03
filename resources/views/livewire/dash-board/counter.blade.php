@@ -203,15 +203,15 @@
             event.data.forEach(element => {
                 let car = '';
                 element.carros.forEach(vehicle => {
-                    car += `${vehicle.nombre} (${vehicle.pivot?.total_reservas?? ""}) `;
+                    car += `${vehicle.nombre} (${vehicle.pivot?.total_reservas?? ""}) <br/>`;
                 });
 
                 bodyTable += `
                 <tr class="border-bottom-info" wire:key="now-res-${element.id}">
                     <th scope="row">${element.id}</th>
                     <th scope="row">${element.nombre}</th>
-                    <th scope="row">${element.fecha_reservacion}</th>
-                    <th scope="row">${element.hora_reservacion}</th>
+                    <th scope="row">${element.fecha_reservacion != null?element.fecha_reservacion:'--/--/----'}</th>
+                    <th scope="row">${element.hora_reservacion != null?element.hora_reservacion:'--:--'}</th>
                     <td>${car}</td>
                     <td>&euro;${element.total}</td>
                 </tr>
@@ -246,8 +246,8 @@
                     <tr class="border-bottom-info">
                         <th scope="row">${element.id}</th>
                         <th scope="row">${element.nombre}</th>
-                        <th scope="row">${element.fecha_reservacion}</th>
-                        <th scope="row">${element.hora_reservacion}</th>
+                        <th scope="row">${element.fecha_reservacion != null ?element.fecha_reservacion:'--/--/----'}</th>
+                        <th scope="row">${element.hora_reservacion != null ?element.hora_reservacion:'--:--'}</th>
                         <td>${car}</td>
                         <td>&euro;${element.total}</td>
                     </tr>
@@ -274,15 +274,15 @@
             event.data.forEach(element => {
                 let car = '';
                 element.carros.forEach(vehicle => {
-                    car += `${vehicle.nombre} (${vehicle.pivot?.total_reservas?? ""}) `;
+                    car += `${vehicle.nombre} (${vehicle.pivot?.total_reservas?? ""}) <br/> `;
                 });
 
                 bodyTable += `
                 <tr class="border-bottom-info" wire:key="now-res-${element.id}">
                     <th scope="row">${element.id}</th>
                     <th scope="row">${element.nombre}</th>
-                    <th scope="row">${element.fecha_reservacion}</th>
-                    <th scope="row">${element.hora_reservacion}</th>
+                    <th scope="row">${element.fecha_reservacion != null ?element.fecha_reservacion:'--/--/----'}</th>
+                    <th scope="row">${element.hora_reservacion != null ?element.hora_reservacion:'--:--'}</th>
                     <td>${car}</td>
                     <td>&euro;${element.total}</td>
                 </tr>
