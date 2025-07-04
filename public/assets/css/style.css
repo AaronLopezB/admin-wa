@@ -2767,7 +2767,7 @@ svg.f-light {
 /*======= Background-color css end  ======= */
 /*======= Font-color css starts  ======= */
 .txt-primary {
-    color: var(--theme-default) !important;
+    color: #7366FF !important;
 }
 
 .txt-secondary {
@@ -2775,7 +2775,7 @@ svg.f-light {
 }
 
 .txt-success {
-    color: #65c15c !important;
+    color: #7366FF !important;
 }
 
 .txt-danger {
@@ -5473,7 +5473,7 @@ strong ~ p {
 }
 
 .border-primary {
-    border-color: var(--theme-default) !important;
+    border-color: #7366FF !important;
 }
 
 .alert-bg-primary {
@@ -5838,7 +5838,7 @@ strong ~ p {
 }
 
 .border-success {
-    border-color: #65c15c !important;
+    border-color:  #7366FF !important;
 }
 
 .alert-bg-success {
@@ -47497,10 +47497,10 @@ select.crypto-select.primary {
 }
 
 .badge-l-success {
-    background-color: #d5eed2;
+    background-color: #dad7fb;
 }
 .badge-l-success:hover {
-    background-color: #d5eed2;
+    background-color: #bfbaf7;
 }
 
 .badge-light-danger {
@@ -109735,7 +109735,7 @@ body.dark-only .page-wrapper .page-body-wrapper .page-body .b-r-primary {
     background-color: #1d1e26;
 }
 body.dark-only .page-wrapper .page-body-wrapper .page-body .border-primary {
-    border-color: var(--theme-default) !important;
+    border-color: #7366FF !important;
 }
 body.dark-only
     .page-wrapper

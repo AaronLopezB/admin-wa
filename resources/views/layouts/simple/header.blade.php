@@ -147,7 +147,7 @@
                     <div class="onhover-show-div notification-dropdown">
                         <h6 class="f-18 mb-0 dropdown-title">Notifications </h6>
                         <ul>
-                            <li class="b-l-primary border-4 toast default-show-toast align-items-center text-light border-0 fade show"
+                            <li class="b-l-primary  tborder-4oast default-show-toast align-items-center text-light border-0 fade show"
                                 aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
                                 <div class="d-flex justify-content-between">
                                     <div class="toast-body">
@@ -244,30 +244,49 @@
                             class="btn-close py-0" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body dark-modal">
-                        <div class="large-modal-header"><i data-feather="chevrons-right"></i>
-                            <h6>Web Design</h6>
+                        <ul class="simple-wrapper nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active txt-primary" id="home-tab" data-bs-toggle="tab"
+                                    href="#home" role="tab" aria-controls="home" aria-selected="true">Detalles del cliente</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link  txt-primary" id="profile-tabs"
+                                    data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                                    aria-selected="false">Productos que reservo</a>
+                                </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+
+                            <div class="tab-pane fade fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="ribbon-wrapper border border-1 height-equal" id="statusReserv" wire:ignore>
+
+                                    <div class="p-10 pt-3 mb-0 " id="detail-customer">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane " id="profile" role="tabpanel"
+                                aria-labelledby="profile-tabs">
+                                <div class="pt-3 mb-0">
+                                    <div class="flex-space flex-wrap align-items-center table-responsive" wire:ignore>
+                                        <table class="table border-bottom-table">
+                                            <thead>
+                                                <tr class="border-bottom-dark">
+                                                    <th scope="col">Descripcion</th>
+                                                    <th scope="col">QTY</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody id="details-product">
+                                            </tbody>
+                                        </table>
+                                        {{-- <div class="table-responsive custom-scrollbar mt-2" wire:loading.remove>
+                                        </div> --}}
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                        <p class="modal-padding-space">We build specialized websites for companies, list them on
-                            digital directories, and set up a sales funnel to boost ROI.</p>
-                        <div class="large-modal-header"><i data-feather="chevrons-right"></i>
-                            <h6>Content Marketing </h6>
-                        </div>
-                        <p class="modal-padding-space">Through better opportunities and knowledgeable marketing
-                            strategies, we aid business funnel. We won't only hit the target; instead, we'll aim higher
-                            and surpass the objectives.</p>
-                        <div class="large-modal-header"><i data-feather="chevrons-right"></i>
-                            <h6>PPC </h6>
-                        </div>
-                        <p class="modal-padding-space">Customized advertising to increase visitors and improve
-                            conversion. To increase retention, identify the correct audience and remarket to them.</p>
-                        <div class="large-modal-header"><i data-feather="chevrons-right"></i>
-                            <h6>UX Designer </h6>
-                        </div>
-                        <p class="modal-padding-space">The capacity to comprehend and experience other people's
-                            feelings is known as empathy. A positive consumer experience is prioritized by UX. The
-                            finest UX designers spend time studying individuals and their tendencies because of this.
-                            Designers may produce goods that genuinely engage and excite customers by having a thorough
-                            understanding of the end consumers.</p>
                     </div>
                 </div>
             </div>

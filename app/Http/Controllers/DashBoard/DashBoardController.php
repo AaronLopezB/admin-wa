@@ -121,16 +121,20 @@ class DashBoardController extends Controller
             case 'reservations':
                 $query = collect($this->showReservas($id));
                 break;
-            case 'users':
-                $query = '';
+            case 'user':
+                $query = collect($this->showUser($id));
                 break;
-
+            case 'product':
+                $query = collect($this->showProduct($id));
+                break;
+            case 'code':
+                $query = collect($this->showCode($id));
+                break;
             default:
                 $query = collect($this->showReservas($id));
                 break;
         }
-
-        dd(['id' => $id, 'model' => $model, 'data' => $query]);
+        return response()->json(['model' => $model, 'data' => $query], 200);
     }
 
     protected function showReservas($id)
@@ -156,5 +160,20 @@ class DashBoardController extends Controller
                 'note.user' // selecciona solo ciertos campos de la relación
             ])
             ->find($id);
+    }
+
+    protected function showUser($id)
+    {
+        return User::find($id);
+    }
+
+    protected function showProduct($id)
+    {
+        return Cars::find($id);
+    }
+
+    protected function showCode($id)
+    {
+        return Code::find($id);
     }
 }
