@@ -194,7 +194,7 @@
         });
 
         /*TRANSLATE*/
-        translate(tnum);
+        /* translate(tnum); */
 
         $(".more_lang .lang").click(function () {
             $(this).addClass("selected").siblings().removeClass("selected");

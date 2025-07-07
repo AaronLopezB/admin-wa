@@ -24,6 +24,7 @@ Route::middleware('auth', 'user_active')->group(function () {
 
     Route::prefix('users')->group(function () {
 
+        Route::get('/create', [UsersController::class, 'create'])->name('users.create');
         Route::get('/', [UsersController::class, 'index'])->name('users');
         Route::get('/{id}', [UsersController::class, 'show'])->name('users.show');
     });

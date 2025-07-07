@@ -36,7 +36,7 @@ class Profile extends Component
 
     public function updateUser($id)
     {
-        dd($this->name, $this->email, $this->password, $this->role);
+        // dd($this->name, $this->email, $this->password, $this->role);
         $this->resetValidation();
         $this->validate([
             'name' => 'required|string|max:255',

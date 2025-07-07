@@ -18,4 +18,10 @@ class UsersController extends Controller
         $user = User::find($id);
         return view('users.profile', compact('user'));
     }
+
+    public function create()
+    {
+        // dd('create user');
+        return view('users.create');
+    }
 }

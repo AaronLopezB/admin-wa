@@ -60,6 +60,20 @@
                             <li><a href="{{ route('reservations.register') }}">Registrar Orden</a></li>
                         </ul>
                     </li>
+                    <li class="sidebar-list">
+                        {{-- <i class="fa-solid fa-thumbtack"></i> --}}
+                        {{-- <label class="badge badge-light-primary">13</label> --}}
+                        <a class="sidebar-link sidebar-title link-nav" href="{{ route('users') }}">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use>
+                            </svg>
+                            <span>Usuarios </span>
+                        </a>
+
+                    </li>
                     <li class="sidebar-main-title">
                         <div>
                             <h6>Miscellaneous</h6>

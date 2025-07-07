@@ -862,7 +862,6 @@
                     },
                 });
                 if (password) {
-                    console.log('Entered password:', password);
 
                     @this.customerPasword = password; // Asigna la contraseña ingresada al componente Livewire
                     $wire.dispatch('disableAccountUser',{id:event.user_id});
@@ -882,7 +881,7 @@
             confirmButtonText: 'Sí, activar'
         }).then((result) => {
             if (result.isConfirmed) {
-                $wire.dispatch('activeAccountUser',{id:event.user_id});
+                $wire.dispatch(' ',{id:event.user_id});
             }
         });
     });
@@ -912,17 +911,21 @@
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
                     // auth()->logout(); // Cierra la sesión del usuario
+
                     $wire.dispatch('logoutUser') // Cierra la sesión del usuario usando Livewire
+                    $wire.$refresh(); // Recarga el componente
 
                 });
             },
             disableAccountCurrendError: () => {
+
                 Swal.fire({
                     title: 'Error al desactivar la cuenta',
                     text: event.msj,
                     icon: event.type,
                     confirmButtonText: 'Aceptar'
                 });
+
             },
             activeAccountCurrend: () => {
                 Swal.fire({

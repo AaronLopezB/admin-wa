@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header card-no-border text-end">
-                <div class="card-header-right-icon"><a class="btn btn-primary f-w-500" href="add-user.html"><i
+                <div class="card-header-right-icon"><a class="btn btn-primary f-w-500" wire:click.prevent="$dispatch('addUser')"><i
                             class="fa-solid fa-plus pe-2"></i>Add User</a></div>
             </div>
             <div class="card-body pt-0 px-0">
@@ -50,11 +50,11 @@
 
                                                     wire:click.prevent="$dispatch('show-user', {user_id:{{$item->id}}} )">Detalles del usuario</button>
                                                 <button class="dropdown-item"
-                                                    wire:click.prevent="$dispatch('update-pass', {reservation_id:{{$item->id}}} )">Cambiar Contraseña</button>
+                                                    wire:click.prevent="$dispatch('update-pass', {user_id:{{$item->id}}} )">Cambiar Contraseña</button>
                                                 <button class="dropdown-item"
-                                                    wire:click.prevent="$dispatch('update-role',{reservation_id:{{$item->id}}})">Cambiar role</button>
+                                                    wire:click.prevent="$dispatch('update-role',{user_id:{{$item->id}}})">Cambiar role</button>
                                                 <button class="dropdown-item"
-                                                    wire:click="$dispatch('update-role',{reservation_id:{{ $item->id }}})">Desactivar</button>
+                                                    wire:click="$dispatch('update-role',{user_id:{{ $item->id }}})">Desactivar</button>
 
                                             </div>
                                         </div>
@@ -77,12 +77,107 @@
             </div>
         </div>
     </div>
+
+    <div wire:ignore.self class="modal fade" id="modalUpdatePassword" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalgetbootstrap" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div
+                    class="modal-toggle-wrapper social-profile text-start dark-sign-up">
+                    <h3 class="modal-header justify-content-center border-0">Cambiar contraseña</h3>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" wire:submit.prevent="editPassword">
+                            <input type="hidden" id="user_id" wire:model="user_id">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="exampleFormControlInput1">Nueva contraseña</label>
+                                        <input class="form-control @error('password') is-invalid @enderror" id="exampleFormControlInput1" type="password" wire:model="password" placeholder="*********">
+                                        @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="exampleFormControlInput1">Confirmar contraseña</label>
+                                    <input class="form-control @error('password_confirmation') is-invalid @enderror" id="exampleFormControlInput1" type="password" wire:model="password_confirmation" placeholder="*********">
+                                    @error('password_confirmation') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-primary" type="submit"> Cambiar contraseña </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @script
 <script>
     $wire.on('show-user',(event) =>{
-        console.log(event);
         window.location.href = `${uri}users/${event.user_id}`;
+    });
+    $wire.on('addUser', () => {
+        window.location.href = `${uri}users/create`;
+    })
+    $wire.on('update-pass',(event) =>{
+        console.log(event);
+        $("#modalUpdatePassword").modal('show');
+        $wire.set('user_id',event.user_id);
+    });
+    $wire.on('validUser', async (event) => {
+        $("#modalUpdatePassword").modal('hide');
+        const { value: password } = await Swal.fire({
+            title: "Ingrese su contraseña",
+            text: "Para confirmar el cambio de la contraseña, ingrese su contraseña.",
+            input: "password",
+            inputLabel: "Password",
+            inputPlaceholder: "Ingrese su contraseña",
+            inputAttributes: {
+                // maxlength: "10",
+                autocapitalize: "off",
+                autocorrect: "off",
+            },
+        });
+        if (password) {
+            console.log(password);
+
+            @this.authPassword = password; // Asigna la contraseña ingresada al componente Livewire
+            $wire.dispatch('updatePassword');
+        }
+    });
+
+    $wire.on('alert', (event) => {
+        console.log('Event received:', event);
+        // Manejadores para cada método posible
+        const handlers = {
+            // Cuando se agrega una nota
+            updatePassword: () => {
+
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+                $wire.$refresh(); // Refresca el componente
+            },
+            updatePasswordError: () => {
+
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+                $wire.$refresh(); // Refresca el componente
+            },
+
+        };
+        // Ejecuta el manejador correspondiente o muestra advertencia si no existe
+        (handlers[event.method] || (() => {
+            Toast.fire({
+                icon: "warning",
+                title: 'Acción no reconocida',
+            });
+        }))();
     });
 </script>
 @endscript

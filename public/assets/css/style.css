@@ -1,4 +1,3 @@
-
 @charset "UTF-8";
 /*! -----------------------------------------------------------------------------------
 
@@ -2767,7 +2766,7 @@ svg.f-light {
 /*======= Background-color css end  ======= */
 /*======= Font-color css starts  ======= */
 .txt-primary {
-    color: #7366FF !important;
+    color: #7366ff !important;
 }
 
 .txt-secondary {
@@ -2775,7 +2774,7 @@ svg.f-light {
 }
 
 .txt-success {
-    color: #7366FF !important;
+    color: #7366ff !important;
 }
 
 .txt-danger {
@@ -5473,7 +5472,7 @@ strong ~ p {
 }
 
 .border-primary {
-    border-color: #7366FF !important;
+    border-color: #7366ff !important;
 }
 
 .alert-bg-primary {
@@ -5838,7 +5837,7 @@ strong ~ p {
 }
 
 .border-success {
-    border-color:  #7366FF !important;
+    border-color: #7366ff !important;
 }
 
 .alert-bg-success {
@@ -59929,7 +59928,8 @@ ul.dot-group li {
 }
 
 .needs-validation .invalid-feedback {
-    color: #898989;
+    /* color: #898989; */
+    color: #ff978f;
 }
 .needs-validation .show-hide {
     right: 30px;
@@ -102492,7 +102492,7 @@ html[dir="rtl"] .dtfh-floatingparent-foot > div {
     background: var(--white);
 }
 .dropdown-menu .dropdown-item:disabled {
-    background: #e9e9e9 !important
+    background: #e9e9e9 !important;
 }
 .dropdown-menu .dropdown-item:hover {
     background-color: #cccccc;
@@ -109735,7 +109735,7 @@ body.dark-only .page-wrapper .page-body-wrapper .page-body .b-r-primary {
     background-color: #1d1e26;
 }
 body.dark-only .page-wrapper .page-body-wrapper .page-body .border-primary {
-    border-color: #7366FF !important;
+    border-color: #7366ff !important;
 }
 body.dark-only
     .page-wrapper
