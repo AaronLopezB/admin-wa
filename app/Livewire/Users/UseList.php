@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class UseList extends Component
 {
 
-    public $password, $password_confirmation, $user_id;
+    public $password, $password_confirmation, $user_id, $key, $location;
     public $authPassword;
 
     public function placeholder()

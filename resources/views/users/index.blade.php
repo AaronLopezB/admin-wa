@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Users')
 @push('css')
-
+    {{-- <link rel="stylesheet" type="text/css" href="{{asset('assets/css/vendors/scrollbar.css')}}"> --}}
+    {{-- <link rel="stylesheet" type="text/css" href="{{asset('assets/css/vendors/scrollable.css')}}"> --}}
 @endpush
 
 @section('main_content')
@@ -32,4 +33,6 @@
 @endsection
 
 @push('scripts')
+    {{-- <script src="{{asset('assets/js/scrollable/perfect-scrollbar.min.js')}}"></script> --}}
+    {{-- <script src="{{asset('assets/js/scrollable/scrollable-custom.js')}}"></script> --}}
 @endpush

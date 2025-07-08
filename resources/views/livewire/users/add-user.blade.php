@@ -1,18 +1,19 @@
 <div>
-    <div class="row">
+    <form wire:submit.prrevent="createUser">
+        <div class="row">
 
-        <div class="col-xl-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Nuevo perfil</h5>
-                    <div class="card-options"><a class="card-options-collapse" href="#"
-                            data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a><a
-                            class="card-options-remove" href="#" data-bs-toggle="card-remove"><i
-                                class="fe fe-x"></i></a></div>
-                </div>
-                <div class="card-body">
-                    <form class="custom-input">
-                        {{-- <div class="row mb-2">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Nuevo perfil</h5>
+                        <div class="card-options"><a class="card-options-collapse" href="#"
+                                data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a><a
+                                class="card-options-remove" href="#" data-bs-toggle="card-remove"><i
+                                    class="fe fe-x"></i></a></div>
+                    </div>
+                    <div class="card-body">
+                        <form class="custom-input">
+                            {{-- <div class="row mb-2">
                                     <div class="profile-title">
                                         <div class="d-flex"> <img class="img-70 rounded-circle" alt=""
                                                 src="../assets/images/user/7.jpg">
@@ -27,99 +28,152 @@
                                     <h6 class="form-label">Bio</h6><textarea class="form-control" rows="5"
                                         placeholder="On the other hand, we denounce with righteous indignation"></textarea>
                                 </div> --}}
-                        <div class="mb-3">
-                            <label class="form-label">Nombre</label>
-                            <input class="form-control" type="text" placeholder="your-email@domain.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email Address</label>
-                            <input class="form-control" type="email" placeholder="your-email@domain.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input class="form-control" type="password" value="password">
-                        </div>
-                        <div class="form-footer"><button class="btn btn-primary btn-block">Save</button></div>
-                    </form>
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input class="form-control" type="text" placeholder="your user"
+                                    wire:model="name">
+                                    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input class="form-control" type="email" placeholder="your-email@domain.com"
+                                    wire:model="email">
+                                    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input class="form-control" type="password" placeholder="**********"
+                                    wire:model="password">
+                                    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirmar password</label>
+                                <input class="form-control" type="password" placeholder="**********"
+                                    wire:model="password_confirmation">
+                                    @error('password_confirmation') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-8">
-            <form class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Edit Profile</h5>
-                    <div class="card-options"><a class="card-options-collapse" href="#"
-                            data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a><a
-                            class="card-options-remove" href="#" data-bs-toggle="card-remove"><i
-                                class="fe fe-x"></i></a></div>
-                </div>
-                <div class="card-body">
-                    <div class="row custom-input">
-                        <div class="col-xxl-5 box-col-12">
-                            <div class="mb-3"><label class="form-label" for="companyName">Company</label><input
-                                    class="form-control" id="companyName" type="text" placeholder="Company"></div>
-                        </div>
-                        <div class="col-sm-6 col-xxl-3 box-col-6">
-                            <div class="mb-3"><label class="form-label" for="customUsername">Username</label><input
-                                    class="form-control" id="customUsername" type="text" placeholder="Username">
+            <div class="col-xl-8">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Datos extra</h5>
+                        <div class="card-options"><a class="card-options-collapse" href="#"
+                                data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a><a
+                                class="card-options-remove" href="#" data-bs-toggle="card-remove"><i
+                                    class="fe fe-x"></i></a></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row custom-input">
+                            <div class="col-xxl-5 box-col-12">
+                                <div class="mb-3"><label class="form-label" for="companyName">Locacion</label>
+                                    <select class="form-control btn-square" id="customCountry" wire:model="location">
+                                        <option value="0">--Select--</option>
+                                        <option value="orlando">Orlando</option>
+                                        <option value="miami">Miami</option>
+                                        <option value="davenport">Davenport</option>
+                                        <option value="madrid">Madrid</option>
+                                    </select>
+                                    @error('location') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-6 col-xxl-4 box-col-6">
-                            <div class="mb-3"><label class="form-label" for="customAddress">Email
-                                    Address</label><input class="form-control" id="customAddress" type="email"
-                                    placeholder="Email"></div>
-                        </div>
-                        <div class="col-sm-6 col-md-6">
-                            <div class="mb-3"><label class="form-label" for="customFirstName">First
-                                    Name</label><input class="form-control" id="customFirstName" type="text"
-                                    placeholder="Company"></div>
-                        </div>
-                        <div class="col-sm-6 col-md-6">
-                            <div class="mb-3"><label class="form-label" for="customLastName">Last
-                                    Name</label><input class="form-control" id="customLastName" type="text"
-                                    placeholder="Last name"></div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3"><label class="form-label" for="customAddress">Address</label><textarea
-                                    class="form-control" id="customAddress" type="text" rows="2.5"
-                                    placeholder="Home address"></textarea></div>
-                        </div>
-                        <div class="col-sm-6 col-xxl-4 box-col-6">
-                            <div class="mb-3"><label class="form-label" for="customCity">City</label><input
-                                    class="form-control" id="customCity" type="text" placeholder="City"></div>
-                        </div>
-                        <div class="col-sm-6 col-xxl-3 box-col-6">
-                            <div class="mb-3"><label class="form-label" for="customPostalCode">Postal
-                                    Code</label><input class="form-control" id="customPostalCode" type="number"
-                                    placeholder="Postal code"></div>
-                        </div>
-                        <div class="col-xxl-5 box-col-12">
-                            <div class="mb-3"><label class="form-label" for="customCountry">Country</label><select
-                                    class="form-control btn-square" id="customCountry">
-                                    <option value="0">--Select--</option>
-                                    <option value="1">Germany</option>
-                                    <option value="2">Canada</option>
-                                    <option value="3">Usa</option>
-                                    <option value="4">Aus</option>
-                                </select></div>
-                        </div>
-                        <div class="col-md-12">
-                            <div><label class="form-label" for="aboutMeDesc">About
-                                    Me</label><textarea class="form-control" id="aboutMeDesc" rows="4"
-                                    placeholder="Enter about your description"></textarea>
+                            <div class="col-sm-6 col-xxl-3 box-col-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="keyUser">Clave del vendedor</label>
+                                    <input class="form-control" id="keyUser" type="text"
+                                        placeholder="Username" wire:model="key">
+                                        @error('key') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
                             </div>
+                            <div class="col-sm-6 col-xxl-4 box-col-6">
+                                <div class="mb-3 form-check form-switch form-check-inline">
+                                    <label class="form-label" for="customAddress"> Activar </label>
+                                <input class="form-check-input check-size" id="flexSwitchCheckDefault2" type="checkbox" role="switch" wire:model="status" wire:checked='status'>
+                                @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
-                <div class="card-footer text-end"><button class="btn btn-primary" type="submit">Update
-                        Profile</button></div>
-            </form>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Roles y permisos</h5>
+                        <div class="card-options"><a class="card-options-collapse" href="#"
+                                data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a><a
+                                class="card-options-remove" href="#" data-bs-toggle="card-remove"><i
+                                    class="fe fe-x"></i></a></div>
+                    </div>
+                    <div class="card-body" wire:ignore>
+                        <div class="vertical-scroll scroll-demo scroll-b-none">
+
+                            <div class="row custom-input">
+                                <div class="col-xxl-5 box-col-12">
+                                    <div class="mb-3"><label class="form-label" for="customCountry">Role</label>
+                                        <select class="form-control btn-square" id="customCountry"
+                                            wire:change="showPermissions($event.target.value)" wire:model="role">
+                                            <option>--Select--</option>
+                                            @foreach ($roles as $item)
+
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-xxl-5 box-col-12" wire:ignore>
+                                    <label class="form-label" for="customCountry">Permisos asignados al rol</label>
+
+                                    <div id="permissions-list">
+
+                                    </div>
+                                    {{-- @foreach ($permissions as $permission)
+                                            <div class="form-check">
+                                                <input class="form-check-input" id="permission-{{$item->id}}"
+                                    type="checkbox" value="{{ $item->name }}" disabled >
+                                    <label class="form-check-label"
+                                        for="permission-{{$item->id}}">{{ $permission->name }}</label>
+                                </div>
+                                @endforeach --}}
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-primary" type="submit">Crear Usuario</button>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </form>
 </div>
+@assets
+<link rel="stylesheet" type="text/css" href="{{asset('assets/css/vendors/scrollable.css')}}">
+    <script src="{{asset('assets/js/scrollable/perfect-scrollbar.min.js')}}"></script>
+@endassets
 @script
 <script>
-    console.log('hola');
-
+    $wire.on('showPermissions',(event) => {
+        let permissionList = '';
+        if (event.permissions.length > 0) {
+            event.permissions.forEach(element => {
+                permissionList += `
+                                            <div class="form-check">
+                                                <input class="form-check-input" id="permission-${element.id}" type="checkbox" value="${element.name}" disabled checked>
+                                                <label class="form-check-label" for="permission-${element.id}">${element.name}</label>
+                                            </div>`;
+            });
+        } else {
+            permissionList = '<p>No hay permisos asignados a este rol.</p>';
+        }
+        document.getElementById('permissions-list').innerHTML = permissionList;
+    });
 </script>
 @endscript
