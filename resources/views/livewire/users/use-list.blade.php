@@ -54,7 +54,7 @@
                                                 <button class="dropdown-item"
                                                     wire:click.prevent="$dispatch('update-role',{user_id:{{$item->id}}})">Cambiar role</button>
                                                 <button class="dropdown-item"
-                                                    wire:click="$dispatch('update-role',{user_id:{{ $item->id }}})">Desactivar</button>
+                                                    wire:click="$dispatch('update-status',{user_id:{{ $item->id }}})">{{ ($item->status != 'deactivate') ? 'Desactivar':'Activar' }}</button>
 
                                             </div>
                                         </div>
@@ -111,6 +111,32 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="modalShowRoles" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalgetbootstrap" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div
+                    class="modal-toggle-wrapper social-profile text-start dark-sign-up">
+                    <h3 class="modal-header justify-content-center border-0">Cambiar contraseña</h3>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" wire:submit.prevent="updateRole">
+                            <input type="hidden" id="user_id" wire:model="user_id">
+                            <div class="col-md-12">
+                                <div class="mb-3" wire:ignore>
+                                    <label class="form-label" for="allRoles">Nueva contraseña</label>
+                                        <select class="form-select" required="" wire:model="role" id="allRoles">
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-primary" type="submit"> Cambiar rol </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 @script
@@ -122,7 +148,6 @@
         window.location.href = `${uri}users/create`;
     })
     $wire.on('update-pass',(event) =>{
-        console.log(event);
         $("#modalUpdatePassword").modal('show');
         $wire.set('user_id',event.user_id);
     });
@@ -147,6 +172,36 @@
             $wire.dispatch('updatePassword');
         }
     });
+    $wire.on('showRoles',(event) => {
+        // console.log(event);
+
+        @this.user_id = event.user_id
+        let roles = '';
+        event.roles.forEach(element => {
+            roles += `<option value="${element.name}">${element.name}</option>`
+        });
+
+        $("#allRoles").html(`<option selected value>Seleccione...</option>${roles}`);
+        $("#modalShowRoles").modal('show');
+    });
+
+    $wire.on('update-status', (event) => {
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: "¿Desea cambiar el estatus del usuario?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cambiar estatus'
+        }).then((result) => {
+            if (result.isConfirmed)
+            {
+                console.log(event,'update Status');
+                $wire.dispatch('updateStatus', { user_id: event.user_id });
+            }
+        });
+    });
 
     $wire.on('alert', (event) => {
         console.log('Event received:', event);
@@ -169,6 +224,31 @@
                 });
                 $wire.$refresh(); // Refresca el componente
             },
+            updateRole:() => {
+                $("#modalShowRoles").modal('hide');
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+                setTimeout(() => {
+
+                    $wire.$refresh();
+                }, timeout = 2000);
+            },
+            updateStatus:() => {
+
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
+                if (event.type == 'success') {
+
+                    setTimeout(() => {
+
+                        $wire.$refresh();
+                    }, timeout = 2000);
+                }
+            }
 
         };
         // Ejecuta el manejador correspondiente o muestra advertencia si no existe
