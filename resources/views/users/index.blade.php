@@ -10,15 +10,15 @@
                     <div class="page-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h3>User List</h3>
+                                <h3>Listado de usuarios</h3>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"> <svg class="stroke-icon">
                                                 <use href="../assets/svg/icon-sprite.svg#stroke-home"></use>
                                             </svg></a></li>
-                                    <li class="breadcrumb-item">Users</li>
-                                    <li class="breadcrumb-item active">User List</li>
+                                    <li class="breadcrumb-item">Usuarios</li>
+                                    <li class="breadcrumb-item active">Listado de usuarios</li>
                                 </ol>
                             </div>
                         </div>

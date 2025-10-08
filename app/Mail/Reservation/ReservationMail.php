@@ -6,6 +6,7 @@ use App\Models\Reservations;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -51,6 +52,14 @@ class ReservationMail extends Mailable
      */
     public function attachments(): array
     {
+        if ($this->reservation->path_invoice != null) {
+            $path = parse_url($this->reservation->path_invoice, PHP_URL_PATH);
+            $path = ltrim($path, '/');
+            return [
+                Attachment::fromStorageDisk('s3', $path)
+                ->as(basename($path))
+            ];
+        }
         return [];
     }
 }

@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Reservation\ReservationMail;
 use GuzzleHttp\Exception\ClientException;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\Reservation\GiftReservationMail;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -43,9 +45,12 @@ class Order extends Component
     public $infoCustomer;
     public $beneficiary_name;
     public $beneficiary_mail;
+    public $king_document;
+    public $key_fact;
 
     public $pay = 1;
     public $is_gift = false;
+    public $invoce_res = false;
     public $dataCuestomer;
     public $payment_token;
 
@@ -88,10 +93,70 @@ class Order extends Component
         return view('livewire.reservations.order');
     }
 
+
+    public function validateNifCinNie($value)
+    {
+        $value = strtoupper(trim($value));
+
+        // ---------------------
+        // Validar NIE (Extranjeros)
+        // ---------------------
+        if (preg_match('/^[XYZ]\d{7}[A-Z]$/', $value)) {
+            $map = ['X' => '0', 'Y' => '1', 'Z' => '2'];
+            $number = strtr(substr($value, 1, 1), $map) . substr($value, 1, 7);
+            $letter = substr($value, -1);
+            return $letter === substr("TRWAGMYFPDXBNJZSQVHLCKE", $number % 23, 1); // NIE válido
+        }
+
+        // ---------------------
+        // Validar DNI / NIF
+        // ---------------------
+        if (preg_match('/^[0-9]{8}[A-Z]$/', $value)) {
+            $letra = substr($value, -1);
+            $numeros = substr($value, 0, 8);
+            return $letra === substr("TRWAGMYFPDXBNJZSQVHLCKE", $numeros % 23, 1);
+        }
+
+        // ---------------------
+        // Validar CIF (Empresas)
+        // ---------------------
+        if (preg_match('/^[ABCDEFGHJKLMNPQRSUVW][0-9]{7}[0-9A-J]$/', $value)) {
+            $control = substr($value, -1);
+            $sumaPar = 0;
+            $sumaImpar = 0;
+            $num = substr($value, 1, 7);
+
+            for ($i = 0; $i < 7; $i++) {
+                $n = intval($num[$i]);
+                if ($i % 2 === 0) { // posiciones impares (0-index)
+                    $n = $n * 2;
+                    if ($n > 9) $n = 1 + ($n % 10);
+                    $sumaImpar += $n;
+                } else {
+                    $sumaPar += $n;
+                }
+            }
+
+            $suma = $sumaPar + $sumaImpar;
+            $digito = (10 - ($suma % 10)) % 10;
+            $letras = "JABCDEFGHI";
+
+            if (ctype_alpha($control)) {
+                return $control === $letras[$digito];
+            } else {
+                return intval($control) === $digito;
+            }
+        }
+
+        return false; // No coincide con ningún formato válido
+
+    }
+
     public function formInfoCustomer()
     {
         $this->resetValidation();
         try {
+
             $this->validate([
                 'name' => 'required|string',
                 'last_name' => 'required|string',
@@ -101,7 +166,25 @@ class Order extends Component
                 'platform' => 'required|not_in:0',
                 'beneficiary_name' => $this->is_gift ? 'required|string' : 'nullable',
                 'beneficiary_mail' => $this->is_gift ? 'required|email' : 'nullable',
+                'king_document' => $this->invoce_res ? 'required|string' : 'nullable',
+                'key_fact' => $this->invoce_res ? ['required', 'string', function ($attribute, $value, $fail) {
+                    if (!$this->validateNifCinNie($value)) {
+                        $fail("El $attribute es invalido.");
+                    }
+                }] : 'nullable',
             ]);
+            // dd(
+            //     ['name'=>$this->name,
+            //     'last_name'=>$this->last_name,
+            //     'phone'=>$this->phone,
+            //     'email'=>$this->email,
+            //     'platform'=>$this->platform,
+            //     'beneficiary_name'=>$this->beneficiary_name,
+            //     'beneficiary_mail'=>$this->beneficiary_mail,
+            //     'king_document'=>$this->king_document,
+            //     'key_fact'=>$this->key_fact,
+            //     'is_gift'=>$this->is_gift,
+            //     'invoce_res'=>$this->invoce_res]);
             session()->put('cli', [
                 'name' => $this->name,
                 'last_name' => $this->last_name,
@@ -110,7 +193,10 @@ class Order extends Component
                 'platform' => $this->platform,
                 'beneficiary_name' => $this->beneficiary_name,
                 'beneficiary_mail' => $this->beneficiary_mail,
-                'gift' => $this->is_gift
+                'gift' => $this->is_gift,
+                'king_document' => $this->king_document,
+                'key_fact' => $this->key_fact,
+                'invoce_res' => $this->invoce_res
             ]);
 
             $this->dispatch('notify', msj: 'Se registro correctamente el usuario', type: 'success', method: 'infoCustomer');
@@ -185,6 +271,7 @@ class Order extends Component
             $this->dispatch('notify', msj: 'Se ha producido un error al procesar el pago, inténtelo de nuevo más tarde.', method: 'deactivatedPayments', reply: 'warning');
             return;
         }
+        // dd($paymentToken);
         $this->payment_method = $paymentToken;
         $subtotal = $this->items->sum('total');
 
@@ -197,7 +284,7 @@ class Order extends Component
             $paymentStripe = resolve(StripeServices::class);
             $paymentStripe->handlePayment($this->payment_method, $total);
             $aprov = $paymentStripe->handleApproval();
-
+            // dd($aprov);
             if ($aprov['response'] === 'auth' || $aprov['response'] === 'payment') {
                 $this->dispatch('authAprovalPayment', msj: $aprov['payment'], method: $aprov['response'], type: 'success', secret: $aprov['response'] === 'auth' ? $aprov['authStripe'] : '');
                 return;
@@ -347,10 +434,13 @@ class Order extends Component
                 Log::error("Error sending SMS to seller {$e->getMessage()}");
             }
 
+
+
+            // mail to confirm
             try {
                 Mail::to($order->email)->cc(config('secret.mails.mailAdmin'))->send(new ReservationMail($order));
             } catch (\Exception $e) {
-                Log::error("Error sending email: {$e->getMessage()}");
+                Log::error("Error sending email confirm: {$e->getMessage()}");
                 throw $e;
             }
 
@@ -399,7 +489,9 @@ class Order extends Component
                 'estatus' => $cli['gift'] === "true" ? 8 : 1,
                 'name_gift' => $cli['gift'] === "true" ? $cli['beneficiary_name'] : null,
                 'mail_gift' => $cli['gift'] === "true" ? $cli['beneficiary_mail'] : null,
-                'stripe_id' => $this->pay === 1 ? session('paymentIntentId') : null
+                'stripe_id' => $this->pay === 1 ? session('paymentIntentId') : null,
+                'key_invoice' => $cli['invoce_res'] ? $cli['key_fact'] : null,
+                'king_invoice' => $cli['invoce_res'] ? $cli['king_document'] : null,
             ]);
             // dd($customer);
 
@@ -436,7 +528,7 @@ class Order extends Component
             VehiclesPerson::insert($guestsData);
 
             Registers::create([
-                'user_id' => 17,
+                'user_id' => auth()->user()->id,
                 'movimiento' => 1,
             ]);
 
@@ -450,6 +542,14 @@ class Order extends Component
                     Log::error('Error creating calendar event: ' . $e->getMessage());
                     throw $e;
                 }
+            }
+
+            if ($cli['invoce_res'] === 'true') {
+                $url = $this->generateInvoice($customer);
+
+                $customer->update([
+                    'path_invoice' => $url,
+                ]);
             }
 
             $cupon = $coupon !== null ? $this->items->sum('total') * $this->items->pluck('code')->first()->descuento / 100 : 0;
@@ -618,5 +718,34 @@ class Order extends Component
             'name' => $nameQrImg,
             'path' => public_path("imgs/gifts/mail/{$nameQrImg}"),
         ];
+    }
+
+    protected function generateInvoice($reservation) {
+        $items = $reservation->carros->map(function ($item) {
+            $price = round($item->precio / 1.21, 2); // Precio sin IVA
+            return [
+                'description' => $item->nombre,
+                'amount' => round($item->pivot->total_reservas * 100, 2),
+                'currency' => 'eur',
+                'quantity' => $item->pivot->total_reservas,
+                'price' => $price, // Precio sin IVA
+                'total' => round($price * $item->pivot->total_reservas, 2),
+            ];
+        })->toArray();
+
+        $pdfPath = "invoce/factura_{$reservation->id}.pdf";
+        $pdf = Pdf::LoadView('pdf.invoce', [
+            'customer' => $reservation,
+            'items' => $items,
+            'numeroFactura' => $reservation->id,
+            'fecha' => Carbon::now()->format('d/m/y'),
+        ])->setPaper('letter', 'portrait')->output();
+
+        Storage::disk('s3')->put($pdfPath, $pdf);
+
+        $path_s3 = Storage::disk('s3')->url($pdfPath, now()->addMinutes(10));
+
+        return $path_s3;
+
     }
 }

@@ -37,6 +37,22 @@ class Cars extends Model
         $this->attributes['identidicador'] = Str::slug($this->nombre);
     }
 
+    public function getStatusNameAttribute()
+    {
+        return [
+            0 => 'Deshabilitado',
+            1 => 'Habilitado'
+        ][$this->location] ?? 'Habilitado';
+    }
+
+    public function getColorStatusAttribute()
+    {
+        return [
+            0 => 'secondary',
+            1 => 'success'
+        ][$this->location] ?? 'success';
+    }
+
     public static function slugVehicle($identity)
     {
         return Cars::where('identidicador', $identity)->first();

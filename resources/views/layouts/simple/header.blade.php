@@ -246,27 +246,27 @@
                     <div class="modal-body dark-modal">
                         <ul class="simple-wrapper nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active txt-primary" id="home-tab" data-bs-toggle="tab"
-                                    href="#home" role="tab" aria-controls="home" aria-selected="true">Detalles del cliente</a>
+                                <a class="nav-link active txt-primary" id="data-cli-tab" data-bs-toggle="tab"
+                                    href="#home" role="tab" aria-controls="data-cli" aria-selected="true">Detalles del cliente</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link  txt-primary" id="profile-tabs"
-                                    data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                                <a class="nav-link  txt-primary" id="product-tabs"
+                                    data-bs-toggle="tab" href="#product" role="tab" aria-controls="product"
                                     aria-selected="false">Productos que reservo</a>
                                 </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
 
-                            <div class="tab-pane fade fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <div class="ribbon-wrapper border border-1 height-equal" id="statusReserv" wire:ignore>
+                            <div class="tab-pane fade fade show active" id="data-cli" role="tabpanel" aria-labelledby="data-cli-tab">
+                                <div class="ribbon-wrapper border border-1 height-equal" id="statusReservGlobal" wire:ignore>
 
-                                    <div class="p-10 pt-3 mb-0 " id="detail-customer">
+                                    <div class="p-10 pt-3 mb-0 " id="detail-customer-global">
 
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane " id="profile" role="tabpanel"
-                                aria-labelledby="profile-tabs">
+                            <div class="tab-pane " id="product" role="tabpanel"
+                                aria-labelledby="product-tabs">
                                 <div class="pt-3 mb-0">
                                     <div class="flex-space flex-wrap align-items-center table-responsive" wire:ignore>
                                         <table class="table border-bottom-table">
@@ -277,7 +277,7 @@
 
                                                 </tr>
                                             </thead>
-                                            <tbody id="details-product">
+                                            <tbody id="details-product-global">
                                             </tbody>
                                         </table>
                                         {{-- <div class="table-responsive custom-scrollbar mt-2" wire:loading.remove>

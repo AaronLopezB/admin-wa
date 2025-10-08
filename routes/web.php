@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\DashBoard\DashBoardController;
 use App\Http\Controllers\Reservations\ShoppingCardController;
+use App\Http\Controllers\Vehicles\VehiclesController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -29,6 +30,10 @@ Route::middleware('auth', 'user_active')->group(function () {
         Route::get('/{id}', [UsersController::class, 'show'])->name('users.show');
     });
 
+    Route::prefix('vehicles')->group(function () {
+        Route::get('/', [VehiclesController::class, 'index'])->name('vehicles.index');
+        Route::get('/{id}', [VehiclesController::class, 'edit'])->name('vehicles.edit');
+    });
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

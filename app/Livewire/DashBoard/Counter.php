@@ -107,14 +107,6 @@ class Counter extends Component
 
     public function download($time)
     {
-
-        // return response()->streamDownload(function () use ($time) {
-        //     $path = storage_path('app/excel');
-        //     $now = now()->format('Ymd_His');
-
-        //     (new ResertvationsExport($time))->store("reservations-{$time}-{$now}.xlsx", 'public');
-        // }, "reservations-{$time}.xlsx");
-
         $now = now()->format('Ymd_His');
         $fileName = "reservations-{$time}-{$now}.xlsx";
         return Excel::download(new ResertvationsExport($time), $fileName);

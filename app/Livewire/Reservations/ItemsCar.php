@@ -13,6 +13,7 @@ class ItemsCar extends Component
     protected $listeners = ['refreshItemPayment' => '$refresh'];
     protected $carService;
     public $items = [];
+    public $new_total = 0;
 
     public function placeholder()
     {

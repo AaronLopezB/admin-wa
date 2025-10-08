@@ -3,6 +3,8 @@
     <tr>
         <th>#</th>
         <th>Cliente</th>
+        <th>Correo</th>
+        <th>Telefono</th>
         <th>Dia</th>
         <th>Hora</th>
         <th>Producto</th>
@@ -30,11 +32,13 @@
         <tr  width="auto">
             <td bgcolor="{{ $color }}">{{ $items->id }}</td>
             <td bgcolor="{{ $color }}" >{{ $items->full_name }}</td>
+            <td bgcolor="{{ $color }}" >{{ $items->email }}</td>
+            <td bgcolor="{{ $color }}" >{{ $items->telefono }}</td>
             <td bgcolor="{{ $color }}" >{{ $items->date_format }}</td>
             <td bgcolor="{{ $color }}">{{ $items->time_format }}</td>
             <td bgcolor="{{ $color }}">
                 @foreach($items->carros as $carro)
-                    {{ $carro->nombre }} {{ $carro->pivot?->total_reservas }}<br>
+                    - {{ $carro->nombre }} {{ $carro->pivot?->total_reservas }}<br>
                 @endforeach
             </td>
             <td bgcolor="{{ $color }}">{{ $items->status_format }}</td>
@@ -43,4 +47,11 @@
         </tr>
     @endforeach
     </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="8"></th>
+            <th><strong>Total.:</strong></th>
+            <th>&euro;{{ number_format($reservations->sum('total'), 2) }}</th>
+        </tr>
+    </tfoot>
 </table>

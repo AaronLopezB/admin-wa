@@ -19,12 +19,15 @@
     <!-- Bootstrap css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
     <!-- App css-->
+    {{-- <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen"> --}}
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css')}}">
+    {{-- <script defer src="{{asset('assets/css/color-1.js')}}"></script>
+    <script defer src="{{asset('assets/css/responsive.js')}}"></script>
+    <script defer src="{{asset('assets/css/style.js')}}"></script> --}}
     <style>
         .freeze-ui4 {
             position: absolute;

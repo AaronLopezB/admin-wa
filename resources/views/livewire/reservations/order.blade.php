@@ -59,6 +59,38 @@
                                     </select>
                                     <div class="invalid-feedback" id="error-platform"></div>
                                 </div>
+                                {{-- invoice --}}
+                                <div class="col-md-6">
+                                    <label for="form-label" for="invoice-check">Requiere Factura</label>
+                                    <div class="mb-3 d-flex gap-3 checkbox-checked">
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="flexRadioDefault1" type="radio" value="true" wire:model="invoce_res" wire:click="$dispatch('habilityInvoice',{value:1})">
+                                            <label class="form-check-label mb-0" for="flexRadioDefault1">Si</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="flexRadioDefault2" type="radio" value="false" wire:model="invoce_res" wire:click="$dispatch('habilityInvoice',{value:0})">
+                                            <label class="form-check-label mb-0" for="flexRadioDefault2">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="invoiceData" class="row d-none">
+                                    <div class="col-sm-6">
+                                        <label class="form-label" for="customKingDocument">Tipo de indentificacion:</label>
+                                        <select class="form-select" id="customKingDocument" wire:model="king_document">
+                                            <option value="">Seleccione una opcion</option>
+                                            <option value="cif">CIF</option>
+                                            <option value="nif">NIF</option>
+                                            <option value="dni">DNI</option>
+                                        </select>
+                                        <div class="invalid-feedback" id="error-king_document"></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label" for="customKeyFact">Numero de identificacion:</label>
+                                        <input class="form-control" id="customKeyFact" type="text" wire:model="key_fact">
+                                        <div class="invalid-feedback" id="error-key_fact"></div>
+                                    </div>
+                                </div>
+                                {{-- data gift --}}
                                 <div class="col-md-6">
                                     <label class="form-label" for="customEmail">Es un regalo</label>
                                     <div class="mb-3 d-flex gap-3 checkbox-checked">
@@ -294,7 +326,7 @@
                                 </div>
                             </div>
                             <div class="wizard-footer d-flex gap-2 justify-content-end mt-3">
-                                <button class="btn button-light-primary" id="backbtn" data-step="1">
+                                <button class="btn button-light-primary" {{-- id="backbtn" --}} wire:click="backStep" data-step="1">
                                     Regresar
                                 </button>
                                 <button class="btn btn-primary" id="nextbtnp" type="submit" wire:target="payment" wire:loading.attr="disabled" >
@@ -450,16 +482,26 @@
 
         $wire.on('habilityGif',(data) => {
             console.log('hola radio',data.value);
-            @this.is_gift = data.value;
+            @this.set('is_gift',data.value === 1);
+            // @this.is_gift = data.value;
             if (data.value === 1) {
-
                 $("#gift").removeClass('d-none');
             }else {
                 $("#gift").addClass('d-none');
-
             }
         });
 
+        $wire.on('habilityInvoice',(data) => {
+            console.log(data.value);
+            // @this.invoce_res = data.value;
+            @this.set('invoce_res',data.value === 1);
+            if (data.value === 1) {
+
+                $("#invoiceData").removeClass('d-none');
+            }else {
+                $("#invoiceData").addClass('d-none');
+            }
+        });
 
         // new Cleave('#customPhone',{
         //     delimiters: ['', "-", "-"],
@@ -529,7 +571,7 @@
                 }
             });
 
-            console.log(error,paymentMethod);
+            console.log({error: error,payment:paymentMethod});
 
             if (error) {
                 displayError.textContent = error.message;
@@ -542,6 +584,7 @@
         });
 
         $wire.on('authAprovalPayment',(event) => {
+            console.log(event);
             const handlers = {
                     payment: () => {
                         // Swal.fire({
@@ -567,7 +610,7 @@
                     },
                     failed: () => {
                         Swal.fire({
-                            icon: event.reply,
+                            icon: event.type,
                             title: 'Error',
                             text: event.msj,
                         });
@@ -604,6 +647,7 @@
     });
 
     $wire.on('notify', (event) => {
+        console.log(event);
         const handlers = {
             infoCustomer: () => {
                 // Mostrar/ocultar secciones
@@ -664,6 +708,7 @@
                 }
             },
             errorProcessPayment: () => {
+
                 Swal.fire({
                     icon: event.type,
                     title: 'Upps...',

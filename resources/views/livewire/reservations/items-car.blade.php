@@ -73,6 +73,12 @@
                 @endif
             </h6>
         </li>
+        <li class="list-total">
+            <h6>Añadir otro total </h6>
+            <h6 class="price">
+                <input class="form-control" id="customPhone" type="text" placeholder="&euro;" wire:model="new_total">
+            </h6>
+        </li>
     </ul>
 </div>
 @script

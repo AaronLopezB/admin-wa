@@ -162,9 +162,9 @@
         });
 
         function modalDataRes(response) {
-            $("#statusReserv").find('.ribbon').remove();
-            $("#detail-customer").empty();
-            $("#details-product").empty();
+            $("#statusReservGlobal").find('.ribbon').remove();
+            $("#detail-customer-global").empty();
+            $("#details-product-global").empty();
             // Mapeo de estatus para mostrar color y texto adecuados
             const statusMap = {
                 1: { color: 'success', text: 'Hizo el recorrido' },
@@ -175,7 +175,7 @@
             const statusCode = statusMap[response.data.estatusfintour] || { color: 'secondary', text: 'Sin estatus' };
             console.log(statusCode);
             // Agrega la cinta de estatus en el modal
-            $("#statusReserv").append(
+            $("#statusReservGlobal").append(
                 `<div class="ribbon ribbon-${statusCode.color} ribbon-clip">${statusCode.text}</div>`
             );
             // URL base para archivos S3
@@ -258,7 +258,7 @@
                 </form>
             `;
             // Inserta los detalles del cliente en el modal
-            $("#detail-customer").append(detailsCustom);
+            $("#detail-customer-global").append(detailsCustom);
             // Construye la tabla de productos reservados
             let productRows = '';
             if (Array.isArray(response.data.carros)) {
@@ -284,9 +284,9 @@
                 });
             }
             // Inserta los productos y personas en la tabla del modal
-            $("#details-product").append(productRows + personRows);
-            // Muestra el modal de detalles de la reservación
-            $("#detailsReservation").modal("show");
+            $("#details-product-global").append(productRows + personRows);
+            // // Muestra el modal de detalles de la reservación
+            // $("#detailsReservation").modal("show");
         }
 
         // $("body").keydown(function (e) {

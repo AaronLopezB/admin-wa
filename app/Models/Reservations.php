@@ -42,7 +42,12 @@ class Reservations extends Model
         'stripe_id',
         'name_gift',
         'mail_gift',
-        'created'
+        // 'created',
+        'document',
+        'identification',
+        'key_invoice',
+        'king_invoice',
+        'path_invoice'
     ];
     public $timestamps = false;
 

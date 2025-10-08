@@ -10,6 +10,7 @@ use Livewire\Attributes\On;
 use App\Models\Reservations;
 use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
+use App\Exports\AllReservations;
 use App\Services\CalendarService;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
@@ -17,6 +18,8 @@ use App\Mail\Reservation\TermsMail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\Reservation\RefundMail;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AllReservationsExport;
 use App\Mail\Reservation\CancelledMail;
 use App\Mail\Reservation\ReservationMail;
 use App\Mail\ReservationReassignmentMail;
@@ -31,6 +34,8 @@ class Dashboard extends Component
 
     protected $listeners = ['refreshDash' => '$refresh'];
     public $search = '';
+    public $dateReserv = "";
+    public $dateCreated = "";
 
     public $reservation_id;
 
@@ -47,6 +52,8 @@ class Dashboard extends Component
 
     public $cnombre, $cemail, $gfnombre, $gfemail;
 
+    public $datesReservations, $statusReservations;
+
     protected $calendar;
 
     public function boot(CalendarService $calendar)
@@ -58,6 +65,12 @@ class Dashboard extends Component
     {
         return view('livewire.placeholder.load-component');
     }
+
+    public function updatingSearch()
+    {
+        $this->resetPage(pageName: 'pageReservations');
+    }
+
     public function render()
     {
         $reservations = Reservations::/* with('carros')-> */when($this->search, function ($query) {
@@ -69,6 +82,20 @@ class Dashboard extends Component
                 ->orWhere('fecha_reservacion', 'like', '%' . $this->search . '%')
                 ->orWhere('hora_reservacion', 'like', '%' . $this->search . '%');
         })
+            ->when($this->dateReserv, function ($query) {
+                $query->whereDate('fecha_reservacion', $this->dateReserv);
+            })
+            ->when($this->dateCreated, function ($query) {
+                $query->whereDate('created', $this->dateCreated);
+            })
+            ->where(function ($query) {
+                $query->where('estatus', 1)
+                    ->orWhere('estatus', 3)
+                    ->orWhere('estatus', 4)
+                    ->orWhere('estatus', 5)
+                    ->orWhere('estatus', 6)
+                    ->orWhere('estatus', 7);
+            })
             ->select('id', 'nombre', 'apellidos', 'email', 'telefono', 'fecha_reservacion', 'hora_reservacion', 'created', 'total', 'estatus')
             ->orderBy('id', 'DESC')
             ->paginate(10, pageName: 'pageReservations');
@@ -76,6 +103,27 @@ class Dashboard extends Component
 
         return view('livewire.dash-board.dashboard', compact('reservations'));
     }
+
+    public function resetFilter()
+    {
+        $this->reset('dateReserv', 'dateCreated');
+        // $this->dateReserv = "";
+        // $this->dateCreated = "";
+    }
+
+    public function downloadsReservations()
+    {
+        // $now = now()->format('Ymd_His');
+        $dates = explode(' to ', $this->datesReservations);
+        $fileName = "all-reservations-{$dates[0]}-{$dates[1]}.xlsx";
+        // dd($dates, $fileName);
+        $response =  Excel::download(new AllReservationsExport($dates, $this->statusReservations), $fileName);
+        $this->reset('datesReservations', 'statusReservations');
+        $this->dispatch('notify', msj: 'Se genero correctamente el filtrado', method: 'downloadExcel', type: 'success');
+        return $response;
+        // dd($this->datesReservations, $this->statusReservations);
+    }
+
 
     public function addNote()
     {
@@ -115,7 +163,10 @@ class Dashboard extends Component
             'total',
             'note',
             'terminos',
-            'licensia'
+            'licensia',
+            'document',
+            'identification',
+            'path_invoice'
         )
             ->with([
                 'carros:id,nombre', // selecciona solo ciertos campos de la relación

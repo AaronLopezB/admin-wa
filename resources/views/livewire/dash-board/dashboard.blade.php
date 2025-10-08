@@ -25,6 +25,28 @@
                 <p class="placeholder-glow"><span class="placeholder col-12 placeholder-light"></span></p>
                 <p class="placeholder-wave"><span class="placeholder col-12 placeholder-light"></span></p>
             </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-2" wire:ignore>
+                        <button class="btn btn-pill btn-outline-primary" wire:click.prevent="resetFilter">Limpiar filtros</button>
+                        <button class="btn btn-pill btn-outline-info" wire:click.prevent="$dispatch('download-reservations')">Descargar reservas</button>
+                    </div>
+                    <div class="col-md-3" wire:ignore>
+                        <label class="text-start">Fecha de reserva
+                        </label>
+                        <div class="input-group flatpicker-calender">
+                            <input class="form-control" id="date-reserv" type="date" placeholder="Seleccione fecha de reserva">
+                        </div>
+                    </div>
+                    <div class="col-md-3" wire:ignore>
+                        <label class="text-start">Fecha de creacion
+                        </label>
+                        <div class="input-group flatpicker-calender">
+                            <input class="form-control" id="date-created" type="date" placeholder="Seleccione fecha de creacion">
+                            </div>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive custom-scrollbar mt-2" wire:loading.remove>
                 <table class="table border-bottom-table">
                     <thead>
@@ -125,6 +147,46 @@
         </div>
     </div>
 
+    {{-- modal download reservations --}}
+    <div wire:ignore.self class="modal fade" id="formDownloadReport">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleUpdateDateReservation">Generar reporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+                <form wire:submit.prevent="downloadsReservations">
+                    {{-- <input type="hidden" wire:model="reservation_id" id="reservation_id"> --}}
+                    <div class="modal-body">
+                        <div class="col-md-12 mb-2" wire:ignore>
+                            <label class="form-label" for="validationDefault04">Fecha</label>
+                            <input
+                                class="form-control @error('dateResUp') is-invalid @enderror" id="date-reserves" type="date"
+                                value="{{ now()->format('Y-m-d') }}" wire:model="datesReservations"/>
+                            @error('dateResUp') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label" for="exampleFormControlTextarea1">Estatus</label>
+                            <select class="form-select @error('timeResUp') is-invalid @enderror" id="validationDefault04" required="" wire:model="statusReservations">
+                                <option selected value>Seleccione...</option>
+                                <option value="todos">Todos</option>
+                                <option value="comprados">Comprados</option>
+                                <option value="regalos">Regalos sin cangear</option>
+                                <option value="cancelados">Cancelados</option>
+                            </select>
+                            @error('timeResUp') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                        <button class="btn btn-primary" type="submit">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {{-- modal add status --}}
     <div wire:ignore.self class="modal fade" id="addStatusRes">
         <div class="modal-dialog" role="document">
@@ -172,7 +234,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" wire:ignore>
                     <ul class="simple-wrapper nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item"><a class="nav-link active txt-primary" id="home-tab" data-bs-toggle="tab"
                                 href="#home" role="tab" aria-controls="home" aria-selected="true">Detalles del cliente</a></li>
@@ -357,10 +419,14 @@
 
 @script
 <script>
-    console.log("Dashboard Livewire Component Loaded");
     $wire.on('add-status-modal',(event) => {
         $("#addStatusRes").modal("show");
         @this.reservation_id = event.reservation_id
+    });
+
+    $wire.on('download-reservations',(event) => {
+        console.log('events download');
+        $("#formDownloadReport").modal("show");
     });
 
     // Evento para mostrar el modal de detalles de la reservación
@@ -409,14 +475,14 @@
                 </div>
             `).join('');
         }
+        console.log(event);
 
         // Construye el bloque de detalles del cliente
         let detailsCustom = `
             <div class="flex-space flex-wrap align-items-center" id="data-customer">
                 <div class="col-md-12 d-flex gap-1">
                     <button class="btn border-dashed-warning" id="editCustomer" data-id="${event.reservation.id}">Editar</button>
-                    <button class="btn border-dashed-success d-none" id="saveDataCustomer" data-id="${event.reservation.id}">Guardar</button>
-                    <button class="btn border-dashed-danger d-none" id="cancelDataCustomer" data-id="${event.reservation.id}">Cancelar</button>
+                    ${event.reservation.path_invoice !== null? `<a class="btn border-dashed-info" href="${event.reservation.path_invoice}" target="_blank">Ver Factura</a>` : ''}
                     <a class="btn border-dashed-info ${!event.reservation.terminos ? 'd-none' : ''}"
                         href="${event.reservation.terminos && event.reservation.terminos.includes(urlS3)
                             ? event.reservation.terminos
@@ -430,12 +496,24 @@
                         Ver Terminos y condiciones
                     </a>
                 </div>
-                <div class="col-md-6 d-flex flex-column gap-1">
-                    <ul class="d-flex flex-column gap-1">
-                        <li><strong>Nombre: </strong>${event.reservation.nombre ?? ''} ${event.reservation.apellidos ?? ''}</li>
-                        <li><strong>Correo: </strong>${event.reservation.email ?? 'N/A'}</li>
-                        <li><strong>Telefono: </strong>${event.reservation.telefono ?? 'N/A'}</li>
-                    </ul>
+                <div class="row col-md-12">
+
+                    <div class="col-md-6">
+                        <ul class="d-flex flex-column gap-1">
+                            <li><strong>Nombre: </strong>${event.reservation.nombre ?? ''} ${event.reservation.apellidos ?? ''}</li>
+                            <li><strong>Correo: </strong>${event.reservation.email ?? 'N/A'}</li>
+                            <li><strong>Telefono: </strong>${event.reservation.telefono ?? 'N/A'}</li>
+                        </ul>
+                    </div>
+
+                    ${event.reservation.document !== null && event.reservation.identification !== null ?   `<div class="col-md-6">
+                        <h5>Documentos</h5>
+                        <ul class="d-flex flex-column gap-1">
+                            <li><strong>${event.reservation.document.toUpperCase() ?? ''}: </strong> ${event.reservation.identification ?? ''}</li>
+
+                        </ul>
+                    </div>` : ''}
+
                 </div>
                 ${event.reservation.note && event.reservation.note.length > 0 ? `
                 <div class="b-t-secondary col-md-12 d-flex flex-column gap-1">
@@ -505,6 +583,8 @@
                 `;
             });
         }
+
+        console.log(productRows, personRows);
 
         // Inserta los productos y personas en la tabla del modal
         $("#details-product").append(productRows + personRows);
@@ -666,6 +746,13 @@
                     icon: event.type,
                     title: event.msj,
                 });
+            },
+            downloadExcel:() => {
+                $("#formDownloadReport").modal('hide');
+                Toast.fire({
+                    icon: event.type,
+                    title: event.msj,
+                });
             }
 
         };
@@ -688,6 +775,37 @@
             onChange: function(selectedDates, dateStr, instance) {
                 // Actualiza el modelo de Livewire con la nueva fecha seleccionada
                 @this.set('dateResUp', dateStr);
+            }
+        });
+        flatpickr("#date-reserves", {
+            mode:"range",
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            locale:"es",
+            onChange: function(selectedDates, dateStr, instance) {
+                // Actualiza el modelo de Livewire con la nueva fecha seleccionada
+                @this.set('datesReservations', dateStr);
+            }
+        });
+        flatpickr("#date-reserv", {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            locale:"es",
+            onChange: function(selectedDates, dateStr, instance) {
+                // Actualiza el modelo de Livewire con la nueva fecha seleccionada
+                @this.set('dateReserv', dateStr);
+            }
+        });
+        flatpickr("#date-created", {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            locale:"es",
+            onChange: function(selectedDates, dateStr, instance) {
+                // Actualiza el modelo de Livewire con la nueva fecha seleccionada
+                @this.set('dateCreated', dateStr);
             }
         });
     });
